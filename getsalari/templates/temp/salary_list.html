@@ -1,0 +1,28 @@
+<!-- در فایل salary_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>لیست حقوق و دستمزد کاربران</title>
+</head>
+<body>
+    <h1>لیست حقوق و دستمزد کاربران</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>نام کاربر</th>
+                <th>نام شرکت</th>
+                <th>حقوق و دستمزد کل</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_profile in user_profiles %}
+                <tr>
+                    <td>{{ user_profile.user.username }}</td>
+                    <td>{{ user_profile.companey_name }}</td>
+                    <td>{{ user_profile.total_salary }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

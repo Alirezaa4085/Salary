@@ -1,0 +1,22 @@
+<h1>Employee Salary List</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Employee Name</th>
+            {% comment %} <th>Number of Children</th> {% endcomment %}
+            <th>Total Salary</th>
+            <!-- Add other necessary headers -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for calculated_salary in calculated_salaries %}
+            <tr>
+                <td>{{ calculated_salary.employee.name }}</td>
+                {% comment %} <td>{{ calculated_salary.employee.num_children }}</td> {% endcomment %}
+                <td>{{ calculated_salary.total_salary }}</td>
+                <!-- Add other necessary data -->
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

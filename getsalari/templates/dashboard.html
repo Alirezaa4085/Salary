@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+
+{% block head %}
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex; /* Set the body to display as a flex container */
+      flex-direction: column; /* Set the flex container to column direction */
+      height: 100vh;
+    }
+
+    .section {
+      box-sizing: border-box;
+      flex: 1 0 10%; /* هر بخش نصف عرض صفحه را اشغال کند */
+      height: 100%; /* هر بخش نصف ارتفاع صفحه را اشغال کند */
+      font-size: 18px;
+      color: white;
+    }
+    .container{
+        height: 98vh;
+        display: flex;
+        gap: 33px;
+        padding:30px;
+        align-items: column;
+        justify-content: center;
+        flex-direction: column;
+    }
+    #main-section1, #main-section2 {
+        display: flex;
+        gap: 10px;
+        height: 50%;
+        {% comment %} margin-botton:10px; {% endcomment %}
+        align-items: center;
+        justify-content: center;
+    }
+
+    #section1 { 
+        background-color: var(--card-color);
+        box-shadow: rgba(0, 0, 0, 0.30) 0px 3px 8px;
+        border-radius:10px
+        }
+    #section2 { 
+        background-color: var(--card-color);
+        box-shadow: rgba(0, 0, 0, 0.30) 0px 3px 8px;
+        border-radius:10px
+
+        }
+    #section3 { 
+        background-color: var(--card-color);
+        box-shadow: rgba(0, 0, 0, 0.30) 0px 3px 8px;
+        border-radius:10px
+
+    }
+    #section4 { 
+        background-color: var(--card-color);
+        box-shadow: rgba(0, 0, 0, 0.30) 0px 3px 8px;
+        border-radius:10px
+
+    }
+    #section1, #section2, #section3, #section4 {
+        margin: 10px;
+        transition: var(--tran-05);
+
+    }
+
+    .test {
+        color: var(--text-color);
+        transition: var(--tran-02);
+        font-size: 17px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 1;
+        padding: 12px 26px;
+
+        {% comment %} opacity: 0; {% endcomment %}
+
+      }
+
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      
+      td, th {
+        text-align: left;
+        padding: 2px;
+        border-bottom: 1px solid #e8e8e8;
+
+      }
+   
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="section" id="main-section1">
+        <div class="section" id="section1">
+            <div class="test">
+                {% for record in last_three_records_employee %}
+                <h2> {{ record.name }}</h2>
+                <p>Hire Date: {{ record.hire_date }}</p>
+                <p>Phone number: {{ record.phone_number }}</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="section" id="section2">
+            <div class="test">
+                <table >
+                    <h1 style= color:red>{{ user_profile.companey_name }} Status</h1>
+                    <p >Welcome, {{ user_profile.user.username }}</p>
+                    
+                    <tr>
+                      <td>Phone Number:</td>
+                      <td>{{ user_profile.phone_number }} </td>
+                    </tr>
+                    <tr>
+                      <td>Hourly Salary:</td>
+                      <td>{{ user_profile.hourly_salary|intcomma }} R</td>
+                    </tr>
+                    <tr>
+                      <td>Overtime Salary:</td>
+                      <td>{{ user_profile.overtime_salary|intcomma }} R</td>
+                    </tr>
+                    <tr>
+                      <td>The Right Of The Child:</td>
+                      <td>{{ user_profile.the_right_of_the_child|intcomma }} R</td>
+                    </tr>
+                    <tr>
+                      <td>Ben Kargari:</td>
+                      <td>{{ user_profile.ben_kargari|intcomma }} R</td>
+                    </tr>
+                    <tr>
+                      <td>Right To Housing:</td>
+                      <td>{{ user_profile.right_to_housing|intcomma }} R</td>
+                      </tr>
+                      <tr>
+                        <td>Base Years:</td>
+                        <td>{{ user_profile.base_years|intcomma }} R</td>
+                        </tr>
+                  </table>
+                
+               
+            </div>  
+
+        </div>
+    </div>
+    <div class="section" id="main-section2">
+        <div class="section" id="section3">
+            <div class="test">
+              <table >
+                <p style=font-size:55px;text-align:center>A look at {{ current_month }}</p>
+                <tr>
+                  <th style=text-align:center>Total salary calculated</th>
+                  <th style=text-align:center >Total salary paid</th>
+                </tr>
+                <tr>
+                  <td style=font-size:35px;text-align:center;color:red >{{ monthly_income_total|intcomma }} R</td>
+                  <td style=font-size:35px;text-align:center;color:red >{{ monthly_expenses_total|intcomma }} R</td>
+                </tr>
+                <tr>
+                  <!-- افزودن فیلد آخر به وسط -->
+                  <th  colspan="2" style=text-align:center>Total Balance</th>
+
+                </tr>              
+                <tr>
+                  <!-- افزودن فیلد آخر به وسط -->
+                  <td colspan="2" style="font-size: 35px; text-align: center; color:green ">{{ total_monthly |intcomma }} R</td>
+                </tr>              
+            </table>
+
+            </div>
+        </div>
+        <div class="section" id="section4">
+            <div class="test">
+                {% for record in last_three_records_salary %}
+                <h2> {{ record.employee.name }}</h2>
+                <p>{{ record.salary_month|date:"F Y"   }}</p>
+                <p style=color:red>This Month Balance: {{ record.current_month_balance|intcomma }} R</p>
+                {% endfor %}        
+            </div>
+        </div>
+      </div>
+</div>
+
+{% endblock %}

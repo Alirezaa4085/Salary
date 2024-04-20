@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>DataTables </title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+	<script type="text/javascript">
+		var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+	</script>
+	<meta name="csrf-token" content="{{ csrf_token }}">
+
+	<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel=" stylesheet">
+	<!--Replace with your tailwind.css once created-->
+
+
+	<!--Regular Datatables CSS-->
+	{% comment %} <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet"> {% endcomment %}
+	<link rel="stylesheet" href="{% static 'css\jquery.dataTables.min.css' %}">
+
+
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+
+	<style>
+		/*Overrides for Tailwind CSS */
+
+		/*Form fields*/
+		.dataTables_wrapper select,
+		.dataTables_wrapper .dataTables_filter input {
+			color: #4a5568;
+			/*text-gray-700*/
+			padding-left: 1rem;
+			/*pl-4*/
+			padding-right: 1rem;
+			/*pl-4*/
+			padding-top: .5rem;
+			/*pl-2*/
+			padding-bottom: .5rem;
+			/*pl-2*/
+			line-height: 1.25;
+			/*leading-tight*/
+			border-width: 2px;
+			/*border-2*/
+			border-radius: .25rem;
+			border-color: var(--stylerow-color);
+			/*border-gray-200*/
+			background-color: var(--stylerow-color);
+			/*bg-gray-200*/
+		}
+
+		/*Row Hover*/
+		table.dataTable.hover tbody tr:hover,
+		table.dataTable.display tbody tr:hover {
+			background-color: #ebf4ff;
+			/*bg-indigo-100*/
+		}
+
+		/*Pagination Buttons*/
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Pagination Buttons - Current selected */
+		.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+			color: #fff !important;
+			/*text-white*/
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			/*shadow*/
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			background: #667eea !important;
+			/*bg-indigo-500*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Pagination Buttons - Hover */
+		.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+			color: #fff !important;
+			/*text-white*/
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			/*shadow*/
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			background: #667eea !important;
+			/*bg-indigo-500*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Add padding to bottom border */
+		table.dataTable.no-footer {
+			border-bottom: 1px solid #e2e8f0;
+			/*border-b-1 border-gray-300*/
+			margin-top: 0.75em;
+			margin-bottom: 0.75em;
+		}
+
+		/*Change colour of responsive icon*/
+		table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before,
+		table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+			background-color: #667eea !important;
+			/*bg-indigo-500*/
+		}
+		
+		.btt {
+			position: absolute;
+			top: 4.0%; 
+			left: 23%;
+			z-index: 999; /* مقدار بالا تر برای z-index انتخاب شود */
+			{% comment %} padding: 12px 26px; {% endcomment %}
+
+
+				}
+
+
+				.mytable{
+					background-color: var(--mytable-color);
+					color: var(--text-color);
+				}
+
+	</style>
+	
+	{% endblock %}
+	
+	
+	{% block content %}
+
+		
+
+
+<div class="container w-full md:w-5/6 xl:w-5/6  mx-auto px-0">
+	
+    <h1 class="flex items-center font-sans font-bold break-normal text-indigo-500 px-2 py-8 text-xl md:text-2xl">
+        Employee List
+    </h1>
+	<button class="bg-blue-500 text-white font-bold py-2 px-5 rounded mr-2 btt" onclick="redirectToGoogle()">
+		New Employee
+		</button>
+
+	{% comment %} TODO ADD background style="background-color: #9f7575" {% endcomment %}
+    <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white mytable">
+		{% comment %} TODO ADD background style="background-color: #9f7575" {% endcomment %}
+		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em;  padding-bottom: 1em;">
+			<thead class="mytable">
+				<tr class="mytable">
+					<th>name</th>
+					<th>phone_number</th>
+					<th>Address</th>
+					<th>hire_date</th>
+					<th>Employment Status</th>
+					<th>num_children</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody class="mytable">
+				{% for employee in employees %}
+				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} " style="background-color: var(--mytable-color);color: var(--text-color);">
+					<td>{{ employee.name }}</td>
+					<td>{{ employee.phone_number }}</td>
+            		<td>{{ employee.address }}</td>
+					<td>{{ employee.hire_date }}</td>
+					<td>{{ employee.employment_status }}</td>
+					<td>{{ employee.num_children }}</td>
+
+					
+
+
+            <td class="action-buttons">
+				<button class="edit-button" onclick="openEditForm({{ employee.id }})">Edit</button>
+				<button class="delete-button" data-employee-id="{{ employee.id }}">Delete</button>
+				
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+   if (typeof jQuery == 'undefined') {
+       console.log('jQuery is not loaded');
+   } else {
+       console.log('jQuery is loaded');
+   }
+</script>
+
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        
+
+
+	<script>
+		$(document).ready(function() {
+
+			var table = $('#example').DataTable({
+					responsive: true
+				})
+				.columns.adjust().responsive.recalc();
+		});
+	</script>
+    <script>
+        function openEditForm(employeeId) {
+            window.location.href = 'edit/' + employeeId + '/';
+        }
+    </script>
+
+	<script>
+		function redirectToGoogle() {
+			window.location.href = 'add/';
+		}
+	</script>
+	
+	<script type="text/javascript">
+		// گرفتن CSRF token از meta tag مربوطه
+		var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+		var csrftoken = $("meta[name='csrf-token']").attr("content");
+
+		// اضافه کردن CSRF token به هر درخواست AJAX
+		$.ajaxSetup({
+			beforeSend: function(xhr) {
+				if (!this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			},
+		});
+	
+		$(document).ready(function () {
+			$('.delete-button').on('click', function () {
+				// تعریف متغیر row *قبل* از اجرای درخواست AJAX
+				var row = $(this).closest('tr');
+				var employeeId = $(this).data('employee-id');
+		
+				if (confirm('Are you sure you want to delete this employee?')) {
+					$.ajax({
+						type: 'DELETE',
+						url: '/employees/delete/' + employeeId + '/',
+						headers: {
+							'X-CSRFToken': csrftoken
+						},
+						success: function () {
+							// به‌روزرسانی جدول یا حذف ردیف موفق بود
+							var table = $('#example').DataTable();
+							table.row(row).remove().draw(false); // حالا متغیر row قابل دسترسی است
+						},
+						error: function (xhr, status, error) {
+							// ارائه خطا به کاربر
+							alert('یک خطا رخ داده است، لطفاً دوباره تلاش کنید.');
+						}
+					});
+				}
+			});
+		});
+	</script>
+
+{% endblock %}
