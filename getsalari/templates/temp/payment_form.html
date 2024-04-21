@@ -1,6 +1,93 @@
-<!-- در تمپلیت payment_form.html -->
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit Payment</button>
-</form>
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block head %}
+<style>
+    /* Style for form container */
+    .form-container {
+        display: grid;
+        place-items: center;
+        height: 80vh; /* Set container to 80% of viewport height */
+        padding: 20px;
+    }
+    
+    /* Style for form elements */
+    .form-container form {
+        max-width: 400px;
+        padding: 30px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* Add subtle shadow effect */
+    }
+    
+    .form-container input[type="text"],
+    .form-container input[type="email"],
+    .form-container input[type="password"],
+    .form-container select {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease; /* Add smooth transition effect */
+    }
+    
+    .form-container input[type="text"]:focus,
+    .form-container input[type="email"]:focus,
+    .form-container input[type="password"]:focus,
+    .form-container select:focus {
+        border-color: #4CAF50; /* Change border color on focus */
+    }
+    
+    .form-container button {
+        padding: 14px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease; /* Add smooth transition effect */
+    }
+
+    .form-container button[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        margin-right: 10px; /* Add margin to separate from back button */
+        margin-bottom: 10px; /* Add space between buttons and input fields */
+    }
+
+    .form-container button[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    /* Style for back button */
+    .form-container button[type="button"] {
+        background-color: #f44336;
+        color: white;
+        margin-bottom: 10px; /* Add space between buttons and input fields */
+    }
+
+    .form-container button[type="button"]:hover {
+        background-color: #d32f2f;
+    }
+
+    /* Style for Amount field */
+    .form-container .amount-field {
+        margin-bottom: 10px; /* Add space between Amount field and buttons */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="amount-field">
+            
+        </div>
+        <button type="submit">Submit Payment</button>
+        <button type="button" onclick="window.history.back()">Back</button> <!-- Back button with onclick event -->
+    </form>
+</div>
+{% endblock %}
