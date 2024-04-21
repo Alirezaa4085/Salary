@@ -171,6 +171,8 @@
 
             <td class="action-buttons">
 				<button class="pay-button" onclick="openEditForm({{ salary_info.id }})">Pay</button>
+				<button class="pay-button" onclick="openEditedForm({{ salary_info.id }})">history</button>
+
 				
             </td>
         </tr>
@@ -206,6 +208,11 @@
   <script>
         function openEditForm(SalaryInformation_id) {
             window.location.href = 'pay/' + SalaryInformation_id + '/';
+			
+        }
+
+		function openEditedForm(SalaryInformation_id) {
+            window.location.href = 'history/' + SalaryInformation_id + '/';
 			
         }
     </script> 
