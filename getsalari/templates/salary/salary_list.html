@@ -149,7 +149,7 @@
 			<thead class="mytable">
 				<tr class="mytable">
 					<th>Employee Name</th>
-					<th>Salary Month</th>
+					<th data-order="{{ salary_info.salary_month|date:'F Y' }}">Salary Month</th>
 					<th>Monthly Income</th>
 					<th>Monthly Expenses</th>
 					<th>Current Month Balance</th>
@@ -188,7 +188,8 @@
 </script>
 
 <!--Datatables -->
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+{% comment %} <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> {% endcomment %}
+<script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
         
 
