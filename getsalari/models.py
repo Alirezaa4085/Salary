@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from datetime import datetime
+import uuid
 
 
 class UserProfile(models.Model):
@@ -35,20 +36,39 @@ class Employee(models.Model):
         super().save(*args, **kwargs)
 
 
+# class SalaryInformation(models.Model):
+#     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+#     salary_month = models.DateField()
+#     monthly_income = models.DecimalField(max_digits=10, decimal_places=2)
+#     monthly_expenses = models.DecimalField(max_digits=10, decimal_places=2)
+#     current_month_balance = models.DecimalField(max_digits=10, decimal_places=2)
+
+#     class Meta:
+#         unique_together = ('employee', 'salary_month')
+        
+#     def save(self, *args, **kwargs):
+#         self.current_month_balance = self.monthly_income - self.monthly_expenses
+#         super().save(*args, **kwargs)
+
+
+class PaymentHistory(models.Model):
+    salary_information = models.ForeignKey('SalaryInformation', on_delete=models.CASCADE)
+    payment_date = models.DateField(auto_now_add=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
 class SalaryInformation(models.Model):
+    id = models.AutoField(primary_key=True)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     salary_month = models.DateField()
     monthly_income = models.DecimalField(max_digits=10, decimal_places=2)
     monthly_expenses = models.DecimalField(max_digits=10, decimal_places=2)
     current_month_balance = models.DecimalField(max_digits=10, decimal_places=2)
 
-    class Meta:
-        unique_together = ('employee', 'salary_month')
-        
     def save(self, *args, **kwargs):
         self.current_month_balance = self.monthly_income - self.monthly_expenses
         super().save(*args, **kwargs)
-        
+
+
 
 class Expense(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)

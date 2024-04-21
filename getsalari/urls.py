@@ -29,6 +29,8 @@ urlpatterns = [
 
     path('salary/', login_required(calculate_salary), name='calculate_salary'),
     path('salary/pay/<int:SalaryInformation_id>/', salary_pay, name='salary_pay'),
+    path('salary/history/<int:employee_id>/', payment_history, name='payment_history'),
+
 
     path('add_expense/', add_expense, name='add_expense'),
     

@@ -3,6 +3,10 @@ from .models import UserProfile, Employee, Expense
 # from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 # from django.contrib.auth.models import User
+from django.utils.timezone import now, localtime
+from datetime import date
+
+
 
 
 class EmployeeForm(forms.ModelForm):
@@ -46,11 +50,32 @@ class EmployeeSearchForm(forms.Form):
     employee = forms.ModelChoiceField(queryset=Employee.objects.all(), empty_label="Select an employee")
 
 
+class MonthSelectForm(forms.Form):
+    months_choices = [
+        (1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'), (6, 'June'),
+        (7, 'July'), (8, 'August'), (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December')
+    ]
+    today = localtime(now())
+    current_month = today.month
+    current_year = today.year
+    month = forms.ChoiceField(choices=months_choices, label='Select Month', initial=current_month)
+    year = forms.IntegerField(label='Year', initial=current_year, min_value=1970, max_value=2100)
 
+    def clean_year(self):
+        year = self.cleaned_data['year']
+        if year == self.today.year:
+            return year
+        raise forms.ValidationError("You can only select the current year.")
 
-
-
-
+    def clean(self):
+        cleaned_data = super().clean()
+        month = cleaned_data.get('month')
+        year = cleaned_data.get('year')
+        today = self.today
+        if year == today.year and int(month) > today.month:
+            raise forms.ValidationError("You can only select past months in the current year.")
+        return cleaned_data
+    
 #######################################form login checks####################################################
 
 # class CustomUserChangeForm(UserChangeForm):

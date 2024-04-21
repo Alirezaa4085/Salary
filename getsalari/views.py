@@ -4,13 +4,16 @@ from django.views.generic import ListView
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm # , UserChangeForm
 from django.http import JsonResponse#, HttpResponse 
 from django.contrib.auth.decorators import login_required , user_passes_test
-from .forms import UserProfileForm ,EmployeeForm, EditEmployeeForm,PaymentForm, ExpenseForm#, salaryandbenefitsform, testerform 
-from .models import UserProfile, Employee, SalaryInformation,calculate_monthly_totals
+from .forms import UserProfileForm ,EmployeeForm, EditEmployeeForm,PaymentForm, ExpenseForm, MonthSelectForm#, salaryandbenefitsform, testerform 
+from .models import UserProfile, Employee, SalaryInformation,calculate_monthly_totals, PaymentHistory
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 import json
 from django.views import View
-    
+from django.db.models import Sum
+import calendar
+
+
 
 
 
@@ -204,6 +207,7 @@ def dashboard(request):
 
 #TODO this views are 
 
+
 def salary_pay(request, SalaryInformation_id):
     salary_info = get_object_or_404(SalaryInformation, pk=SalaryInformation_id)
 
@@ -212,8 +216,11 @@ def salary_pay(request, SalaryInformation_id):
         if form.is_valid():
             amount = form.cleaned_data['amount']
             
-            # Update monthly_expenses in the existing SalaryInformation instance
-            salary_info.monthly_expenses = amount
+            # Create a new PaymentHistory instance
+            payment = PaymentHistory.objects.create(salary_information=salary_info, amount=amount)
+
+            # Update monthly_expenses instead of total_payments
+            salary_info.monthly_expenses += amount
             salary_info.save()
 
             return redirect('calculate_salary')  # Redirect to a success page or another page as needed
@@ -222,6 +229,27 @@ def salary_pay(request, SalaryInformation_id):
 
     context = {'form': form}
     return render(request, 'temp/payment_form.html', context)
+
+
+def payment_history(request, employee_id):
+    if request.method == 'POST':
+        form = MonthSelectForm(request.POST)
+        if form.is_valid():
+            selected_month = int(form.cleaned_data['month'])
+            salary_info = SalaryInformation.objects.filter(employee_id=employee_id, salary_month__month=selected_month)
+            payment_history = PaymentHistory.objects.filter(salary_information__employee_id=employee_id, payment_date__month=selected_month)
+    else:
+        form = MonthSelectForm()
+        salary_info = SalaryInformation.objects.filter(employee_id=employee_id)
+        payment_history = PaymentHistory.objects.filter(salary_information__employee_id=employee_id)
+
+    context = {
+        'form': form,
+        'salary_info': salary_info,
+        'payment_history': payment_history,
+    }
+    return render(request, 'temp/payment_history.html', context)
+
 
 def add_expense(request):
     if request.method == 'POST':
