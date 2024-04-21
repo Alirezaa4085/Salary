@@ -21,7 +21,7 @@ class EmployeeForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['companey_name', 'phone_number', 'hourly_salary', 'overtime_salary', 'the_right_of_the_child', 'ben_kargari', 'right_to_housing', 'base_years']
+        fields = ['company_name', 'phone_number', 'hourly_salary', 'overtime_salary', 'the_right_of_the_child', 'ben_kargari', 'right_to_housing', 'base_years']
 
 class EditEmployeeForm(forms.ModelForm):
     class Meta:
