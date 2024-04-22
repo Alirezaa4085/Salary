@@ -31,13 +31,18 @@ class EditEmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
         fields = ['name', 'phone_number', 'hire_date', 'employment_status', 'num_children', 'address']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['hire_date'].widget = forms.DateInput(attrs={'type': 'date'})
+
 
 
 #TODO thats socks
 
 class PaymentForm(forms.Form):
     amount = forms.DecimalField(label='Amount', max_digits=10, decimal_places=2)
-    # دیگر فیلدهای مربوط به پرداخت را اضافه کنید، به عنوان مثال توضیحات یا هر فیلد دیگری که نیاز دارید
+    payment_date = forms.DateField(label='Payment Date', initial=date.today, widget=forms.DateInput(attrs={'type': 'date'}))
 
 
 class ExpenseForm(forms.ModelForm):

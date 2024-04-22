@@ -194,8 +194,8 @@
   <div class="tester">
     <i class='bx bx-money-withdraw'></i>    
     <div class="company-info">
-      <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_income_total|intcomma }} R</p>
-          <p style="font-size: 13px;">Averge Salary</p>
+      <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_income_total }} R</p>
+          <p style="font-size: 13px;">Total Salary</p>
       </div>
   </div>
 </div>
@@ -204,7 +204,7 @@
   <div class="tester">
     <i class='bx bxs-calculator' ></i>     
     <div class="company-info">
-      <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_expenses_total|intcomma }} R</p>
+      <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_expenses_total }} R</p>
           <p style="font-size: 13px;">total oustanding</p>
       </div>
   </div>
@@ -316,17 +316,17 @@
       <thead>
       <tr>
       <th>Name</th>
-      <th>Hire date</th>
-      <th>Current Month Balance</th>
+      <th>pay date</th>
+      <th>amount</th>
       </tr>
       </thead>
       <tbody>
         
         {% for record in last_three_records_salary %}
         <tr>
-        <td>{{ record.employee.name }}</td>
-        <td>{{ record.salary_month|date:"F Y"   }}</td>
-        <td>{{ record.current_month_balance|intcomma }} R</td></tr>
+        <td>{{ record.salary_information.employee.name }}</td>
+        <td>{{ record.payment_date }}</td>
+        <td>{{ record.amount }} R</td></tr>
         </tr>
     
         {% endfor %}

@@ -5,20 +5,17 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm # , U
 from django.http import JsonResponse#, HttpResponse 
 from django.contrib.auth.decorators import login_required , user_passes_test
 from .forms import UserProfileForm ,EmployeeForm, EditEmployeeForm,PaymentForm, ExpenseForm, MonthSelectForm#, salaryandbenefitsform, testerform 
-from .models import UserProfile, Employee, SalaryInformation,calculate_monthly_totals, PaymentHistory
+from .models import UserProfile, Employee, SalaryInformation, PaymentHistory
 from datetime import datetime, timedelta
 from django.http import JsonResponse
+from django.urls import reverse
 import json
 from django.views import View
 from django.db.models import Sum
 import calendar
-
-
-
-
-
 # from django.views.generic.edit import FormView
 # from .forms import CustomUserChangeForm, CustomPasswordChangeForm
+
 
 def calculatee_salary(request):
 
@@ -92,14 +89,14 @@ def calculate_salary(request):
     return render(request, 'salary/salary_list.html', context)
 
 def display_last_three_records(request):
-    # با استفاده از Queryset، سه آخرین رکورد اضافه شده را بازیابی کنید
-    last_three_records = SalaryInformation.objects.order_by('-salary_month')[:3]
+    # با استفاده از Queryset، سه آخرین رکورد اضافه شده را به جدول PaymentHistory بازیابی کنید
+    last_three_records = PaymentHistory.objects.select_related('salary_information__employee').order_by('-payment_date')[:3]
 
     # اطلاعات مورد نظر را به قالب ارسال کنید
     context = {'last_three_records': last_three_records}
     
     # در قالب مورد نظر، از اطلاعات دریافتی برای نمایش استفاده کنید
-    return render(request, 'temp\display_salary.html', context)
+    return render(request, 'temp\display_payments.html', context)
 
 def me(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
@@ -128,13 +125,24 @@ def employee_form_view(request):
 
     return render(request, 'employee_form.html', {'form': form})
 
+def edit_employee(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.method == 'POST':
+        form = EditEmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            return redirect('employee-list')  # به نمایش لیست کارمندان منتقل می‌شود
+    else:
+        form = EditEmployeeForm(instance=employee)
+    return render(request, 'employees/employees_edit.html', {'form': form})
+
 def employees_list(request):
     # employees = Employee.objects.all()  # گرفتن همه کارمندان از دیتابیس
     # return render(request, 'employees/employees_list.html', {'employees': employees})
     employees = Employee.objects.filter(user=request.user)
     return render(request, 'employees/employees_list.html', {'employees': employees})
 
-def Fill_companey_form(request):
+def Fill_Mycompany_form(request):
     user_profile = UserProfile.objects.get_or_create(user=request.user)[0]
     form = UserProfileForm(request.POST or None, instance=user_profile)
     
@@ -170,18 +178,31 @@ def register_view(request):
     form = UserCreationForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = form.save()
+        # ایجاد UserProfile همزمان با ایجاد کاربر
+        UserProfile.objects.create(user=user)
         login(request, user)
         return redirect('dashboard')
     return render(request, 'register.html', {'form': form})
+
+def calculate_monthly_totals(request):
+    current_month = datetime.now().replace(day=1)
+    # یافتن کاربر فعلی
+    current_user = request.user
+    # یافتن پروفایل کاربر فعلی
+    user_profile = get_object_or_404(UserProfile, user=current_user)
+    # فیلتر کردن اطلاعات مربوط به کاربر فعلی
+    monthly_income_total = SalaryInformation.objects.filter(employee__user=current_user, salary_month=current_month).aggregate(Sum('monthly_income'))['monthly_income__sum'] or 0
+    monthly_expenses_total = SalaryInformation.objects.filter(employee__user=current_user, salary_month=current_month).aggregate(Sum('monthly_expenses'))['monthly_expenses__sum'] or 0
+    return monthly_income_total, monthly_expenses_total
 
 def dashboard(request):
 
     username = request.user.username
     
-    last_three_records_salary = SalaryInformation.objects.order_by('-salary_month')[:3]
+    last_three_records_salary = PaymentHistory.objects.order_by('-payment_date')[:3]
     last_three_records_employee = Employee.objects.order_by('-user')[:3]
     user_profile = UserProfile.objects.get(user=request.user)
-    monthly_income_total, monthly_expenses_total = calculate_monthly_totals()
+    monthly_income_total, monthly_expenses_total = calculate_monthly_totals(request)
     total_monthly = monthly_income_total - monthly_expenses_total
     current_month = datetime.now().strftime('%B')
     current_user_employees = Employee.objects.filter(user=request.user).count()
@@ -203,10 +224,7 @@ def dashboard(request):
 
     return render(request, 'temp/dashboard2.html',context)
 
-
-
 #TODO this views are 
-
 
 def salary_pay(request, SalaryInformation_id):
     salary_info = get_object_or_404(SalaryInformation, pk=SalaryInformation_id)
@@ -215,9 +233,11 @@ def salary_pay(request, SalaryInformation_id):
         form = PaymentForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
+            payment_date = form.cleaned_data['payment_date']  # دریافت تاریخ از فرم
+
             
             # Create a new PaymentHistory instance
-            payment = PaymentHistory.objects.create(salary_information=salary_info, amount=amount)
+            payment = PaymentHistory.objects.create(salary_information=salary_info, amount=amount, payment_date=payment_date)
 
             # Update monthly_expenses instead of total_payments
             salary_info.monthly_expenses += amount
@@ -230,26 +250,68 @@ def salary_pay(request, SalaryInformation_id):
     context = {'form': form}
     return render(request, 'temp/payment_form.html', context)
 
+#TODO fix monthly_expenses bug
 
 def payment_history(request, employee_id):
-    if request.method == 'POST':
-        form = MonthSelectForm(request.POST)
-        if form.is_valid():
-            selected_month = int(form.cleaned_data['month'])
-            salary_info = SalaryInformation.objects.filter(employee_id=employee_id, salary_month__month=selected_month)
-            payment_history = PaymentHistory.objects.filter(salary_information__employee_id=employee_id, payment_date__month=selected_month)
-    else:
-        form = MonthSelectForm()
-        salary_info = SalaryInformation.objects.filter(employee_id=employee_id)
-        payment_history = PaymentHistory.objects.filter(salary_information__employee_id=employee_id)
+    employee = get_object_or_404(Employee, id=employee_id)
+    payment_history = PaymentHistory.objects.filter(salary_information__employee_id=employee_id)
+    month_names = {
+        'January': 'January',
+        'February': 'February',
+        'March': 'March',
+        'April': 'April',
+        'May': 'May',
+        'June': 'June',
+        'July': 'July',
+        'August': 'August',
+        'September': 'September',
+        'October': 'October',
+        'November': 'November',
+        'December': 'December',
+    }
 
     context = {
-        'form': form,
-        'salary_info': salary_info,
+        'employee': employee,
         'payment_history': payment_history,
+        'month_names': month_names,
+
     }
     return render(request, 'temp/payment_history.html', context)
 
+def monthly_payment_history(request, employee_id, month):
+    employee = get_object_or_404(Employee, id=employee_id)
+    # تبدیل نام ماه به عدد ماه
+    month_number = datetime.strptime(month, '%B').month
+    
+    # 1. استخراج همه رکوردهای مربوط به آن ماه از SalaryInformation
+    salary_info_for_month = SalaryInformation.objects.filter(employee_id=employee_id, salary_month__month=month_number)
+    
+    # 2. استخراج پرداخت‌های مربوط به هر یک از این رکوردها
+    payment_history = PaymentHistory.objects.filter(salary_information__in=salary_info_for_month)
+
+    context = {
+        'employee': employee,
+        'payment_history': payment_history,
+        'month': month,
+    }
+    return render(request, 'temp/monthly_payment_history.html', context)
+
+def delete_payment(request, payment_id):
+    payment = get_object_or_404(PaymentHistory, pk=payment_id)
+    month_expense = payment.amount  # مقدار برای کاهش ماهیانه
+
+    # حذف پرداخت
+    payment.delete()
+
+    # به روزرسانی monthly_expenses
+    salary_info = payment.salary_information
+    salary_info.monthly_expenses -= month_expense
+    salary_info.save()
+
+    # ساخت URL جدید برای ماه مورد نظر
+    month_url = reverse('monthly_payment_history', kwargs={'employee_id': salary_info.employee_id, 'month': salary_info.salary_month.strftime('%B').lower()})
+
+    return redirect(month_url)
 
 def add_expense(request):
     if request.method == 'POST':
@@ -276,9 +338,22 @@ def pay(request, salary_info_id):
 
     return JsonResponse({'success': True})
 
+def get_monthly_totals(request):
+    # Get monthly income and expenses totals
+    monthly_income_total, _ = calculate_monthly_totals()
 
+    # Generate labels for the last 6 months (adjust as needed)
+    labels = []
+    current_month = datetime.now().replace(day=1)
+    for i in range(6):
+        labels.append(current_month.strftime('%B %Y'))
+        current_month -= timedelta(days=1)
+        current_month = current_month.replace(day=1)
 
+    # Reverse the labels list to display in chronological order
+    labels.reverse()
 
+    return JsonResponse({'labels': labels, 'monthly_income_total': monthly_income_total})
 
 # def users(request):
 #     return render(request, 'users.html')
@@ -313,20 +388,6 @@ def pay(request, salary_info_id):
 #     else:
 #         form = CustomPasswordChangeForm(request.user)
 #     return render(request, 'change_password.html', {'form': form})
-
-
-
-
-def edit_employee(request, employee_id):
-    employee = get_object_or_404(Employee, pk=employee_id)
-    if request.method == 'POST':
-        form = EditEmployeeForm(request.POST, instance=employee)
-        if form.is_valid():
-            form.save()
-            return redirect('employee-list')  # به نمایش لیست کارمندان منتقل می‌شود
-    else:
-        form = EditEmployeeForm(instance=employee)
-    return render(request, 'employees/employees_edit.html', {'form': form})
 
 
 
@@ -464,45 +525,29 @@ def edit_employee(request, employee_id):
 #         data = self.get_data()
 #         return render(request, 'temp/chart.html', {'data': json.dumps(data)})
 
-def tester(request):
 
-    username = request.user.username
+# def tester(request):
+
+#     username = request.user.username
     
-    last_three_records_salary = SalaryInformation.objects.order_by('-salary_month')[:3]
-    last_three_records_employee = Employee.objects.order_by('-user')[:3]
-    user_profile = UserProfile.objects.get(user=request.user)
-    monthly_income_total, monthly_expenses_total = calculate_monthly_totals()
-    total_monthly = monthly_income_total - monthly_expenses_total
-    current_month = datetime.now().strftime('%B')
+#     last_three_records_salary = SalaryInformation.objects.order_by('-salary_month')[:3]
+#     last_three_records_employee = Employee.objects.order_by('-user')[:3]
+#     user_profile = UserProfile.objects.get(user=request.user)
+#     monthly_income_total, monthly_expenses_total = calculate_monthly_totals(request)
+#     total_monthly = monthly_income_total - monthly_expenses_total
+#     current_month = datetime.now().strftime('%B')
 
 
-    # اطلاعات مورد نظر را به قالب ارسال کنید
-    context = {
-                'last_three_records_salary': last_three_records_salary,
-                'username': username,
-                'last_three_records_employee':last_three_records_employee,
-                'user_profile': user_profile,
-                'monthly_income_total': monthly_income_total,
-                'monthly_expenses_total': monthly_expenses_total,
-                'current_month': current_month,
-                'total_monthly':total_monthly
-                }
+#     # اطلاعات مورد نظر را به قالب ارسال کنید
+#     context = {
+#                 'last_three_records_salary': last_three_records_salary,
+#                 'username': username,
+#                 'last_three_records_employee':last_three_records_employee,
+#                 'user_profile': user_profile,
+#                 'monthly_income_total': monthly_income_total,
+#                 'monthly_expenses_total': monthly_expenses_total,
+#                 'current_month': current_month,
+#                 'total_monthly':total_monthly
+#                 }
 
-    return render(request, 'temp/dashboard2.html',context)
-
-def get_monthly_totals(request):
-    # Get monthly income and expenses totals
-    monthly_income_total, _ = calculate_monthly_totals()
-
-    # Generate labels for the last 6 months (adjust as needed)
-    labels = []
-    current_month = datetime.now().replace(day=1)
-    for i in range(6):
-        labels.append(current_month.strftime('%B %Y'))
-        current_month -= timedelta(days=1)
-        current_month = current_month.replace(day=1)
-
-    # Reverse the labels list to display in chronological order
-    labels.reverse()
-
-    return JsonResponse({'labels': labels, 'monthly_income_total': monthly_income_total})
+#     return render(request, 'temp/dashboard2.html',context)

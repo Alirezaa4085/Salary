@@ -1,6 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends 'base.html' %}
+
+{% block head %}
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Form</title>
@@ -39,16 +40,23 @@
             display: none;  /* initially hide the number input */
         }
 
-        input[type="submit"] {
+        input[type="submit"]{
             background-color: #4caf50;
             color: #fff;
             cursor: pointer;
         }
+        input[type="button"]{
+            background-color: red;
+            color: #fff;
+            cursor: pointer;
+        }
     </style>
-</head>
-<body>
+    {% endblock %}
 
-<form method="post" action="{% url 'employee_form_view' %}">
+
+    
+    {% block content %}
+    <form method="post" action="{% url 'employee_form_view' %}">
     {% csrf_token %}
     
     <label for="id_name">Your Name:</label>
@@ -71,6 +79,8 @@
 
     
     <input type="submit" value="Submit">
+    <input type="button" value="Cancel" onclick="window.history.back()">
+
 </form>
 
 <script>
@@ -96,5 +106,4 @@
     });
 </script>
 
-</body>
-</html>
+{% endblock %}

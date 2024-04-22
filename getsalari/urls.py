@@ -18,18 +18,22 @@ urlpatterns = [
     
     
     
-    path('fillform/', login_required(Fill_companey_form), name='Fill_companey_form'),
+    path('fillform/', login_required(Fill_Mycompany_form), name='Fill_Mycompany_form'),
     path('me', login_required(me) , name='me'),
     
     path('test/', login_required(display_last_three_records), name='display_salary'),
 
+
     #TODO dont trust to this urls
     
-    path('tester/', login_required(tester), name='dashboard'),
+    # path('tester/', login_required(tester), name='dashboard'),
+    # path('tester/', login_required(tester) , name='tester'),
 
     path('salary/', login_required(calculate_salary), name='calculate_salary'),
     path('salary/pay/<int:SalaryInformation_id>/', salary_pay, name='salary_pay'),
     path('salary/history/<int:employee_id>/', payment_history, name='payment_history'),
+    path('salary/history/<int:employee_id>/<str:month>/', monthly_payment_history, name='monthly_payment_history'),
+    path('payment/delete/<int:payment_id>/', delete_payment, name='delete_payment'),
 
 
     path('add_expense/', add_expense, name='add_expense'),
@@ -38,7 +42,6 @@ urlpatterns = [
 
 
     
-    # path('tester/', login_required(tester) , name='tester'),
     
     # path('employee/form/', EmployeeFormView.as_view(), name='employee_form'),
     

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Last Three Payment Records</title>
+</head>
+<body>
+    <h1>Last Three Payment Records</h1>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>User Name</th>
+                <th>Payment Date</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in last_three_records %}
+            <tr>
+                <td>{{ record.salary_information.employee.name }}</td>
+                <td>{{ record.payment_date }}</td>
+                <td>{{ record.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
