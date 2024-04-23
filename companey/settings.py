@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'getsalari'
+    'getsalari',
+    'dashboard',
+    'employee',
+    'salary',
+    'account'
 ]
 
 MIDDLEWARE = [
@@ -113,7 +117,11 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
+
+USE_THOUSAND_SEPARATOR = True
+
+NUMBER_GROUPING = 0
 
 USE_TZ = True
 

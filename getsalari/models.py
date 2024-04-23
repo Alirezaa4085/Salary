@@ -67,7 +67,7 @@ def update_num_children(sender, instance, **kwargs):
 
 class PaymentHistory(models.Model):
     salary_information = models.ForeignKey('SalaryInformation', on_delete=models.CASCADE)
-    payment_date = models.DateField()
+    payment_date = models.DateTimeField()
     amount = models.DecimalField(max_digits=10, decimal_places=0)
 
 class SalaryInformation(models.Model):

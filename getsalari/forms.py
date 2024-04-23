@@ -8,41 +8,10 @@ from datetime import date
 
 
 
-
-class EmployeeForm(forms.ModelForm):
-    class Meta:
-        model = Employee
-        fields = ['name', 'phone_number', 'address', 'hire_date', 'employment_status', 'num_children']
-    
-    def __init__(self, *args, **kwargs):
-        super(EmployeeForm, self).__init__(*args, **kwargs)
-        self.fields['num_children'].widget = forms.HiddenInput()
-
-        if 'employment_status' in self.data and self.data['employment_status'] == 'True':
-            self.fields['num_children'].widget = forms.NumberInput()
-        self.fields['hire_date'].widget = forms.DateInput(attrs={'type': 'date'})
-
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['company_name', 'phone_number', 'hourly_salary', 'overtime_salary', 'the_right_of_the_child', 'ben_kargari', 'right_to_housing', 'base_years']
-
-class EditEmployeeForm(forms.ModelForm):
-    class Meta:
-        model = Employee
-        fields = ['name', 'phone_number', 'hire_date', 'employment_status', 'num_children', 'address']
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['hire_date'].widget = forms.DateInput(attrs={'type': 'date'})
-
-
-
-#TODO thats socks
-
-class PaymentForm(forms.Form):
-    amount = forms.DecimalField(label='Amount', max_digits=10, decimal_places=2)
-    payment_date = forms.DateField(label='Payment Date', initial=date.today, widget=forms.DateInput(attrs={'type': 'date'}))
 
 
 class ExpenseForm(forms.ModelForm):
