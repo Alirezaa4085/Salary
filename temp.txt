@@ -1,0 +1,5 @@
+1. change right chart to: total = salari - expens
+
+2. change hole salary calculator form
+
+3.

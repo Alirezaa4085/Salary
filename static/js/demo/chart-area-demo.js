@@ -27,6 +27,10 @@ function number_format(number, decimals, dec_point, thousands_sep) {
   return s.join(dec);
 }
 
+const element = document.getElementById('jschart');
+const intValue = parseInt(element.textContent.replace(/,/g, ""));
+console.log(intValue);
+console.log(typeof intValue);
 // Area Chart Example
 var ctx = document.getElementById("myAreaChart");
 var myLineChart = new Chart(ctx, {
@@ -34,7 +38,7 @@ var myLineChart = new Chart(ctx, {
   data: {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [{
-      label: "Earnings",
+      label: "Total",
       lineTension: 0.3,
       backgroundColor: "rgba(78, 115, 223, 0.05)",
       borderColor: "rgba(78, 115, 223, 1)",
@@ -46,7 +50,7 @@ var myLineChart = new Chart(ctx, {
       pointHoverBorderColor: "rgba(78, 115, 223, 1)",
       pointHitRadius: 10,
       pointBorderWidth: 2,
-      data: [0, 10000000, 10000000, 25000000, 17000000, 32000000, 20000000, 25000000, 15000000, 30000000, 25000000, 40000000],
+      data: [0, 10000000, intValue, 25000000, 17000000, 32000000, 20000000, 25000000, 15000000, 30000000, 25000000, 40000000],
     }],
   },
   options: {
@@ -110,9 +114,31 @@ var myLineChart = new Chart(ctx, {
       callbacks: {
         label: function(tooltipItem, chart) {
           var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-          return datasetLabel + ': $' + number_format(tooltipItem.yLabel);
+          return datasetLabel + ': ' + number_format(tooltipItem.yLabel) + ' R ';
         }
       }
     }
   }
 });
+
+// تابع برای به‌روز‌رسانی نمودار
+function updateChart() {
+  $.ajax({
+      url: '/getsalari/monthly_totals_json/',
+
+      type: 'GET',
+      success: function(data) {
+          // به روز رسانی داده‌های نمودار
+          myLineChart.data.datasets[0].data = [data.monthly_income_total, data.monthly_expenses_total];
+          myLineChart.update();
+      },
+      error: function(xhr, errmsg, err) {
+          console.log(xhr.status + ": " + xhr.responseText); // نمایش خطا در صورت وقوع
+      }
+  });
+}
+
+// فراخوانی تابع updateChart هر چند ثانیه
+setInterval(updateChart, 5000); // برای مثال، هر 5 ثانیه
+
+
