@@ -1,12 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.http import JsonResponse 
-from getsalari.models import UserProfile, Employee, SalaryInformation, PaymentHistory
-from datetime import datetime, timedelta
-from django.http import JsonResponse
-from django.urls import reverse
-from django.db.models import Sum
+from account.models import UserProfile
 
 def register_view(request):
     form = UserCreationForm(request.POST or None)

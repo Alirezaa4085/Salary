@@ -1,16 +1,11 @@
 from django import forms
-from getsalari.models import UserProfile, Employee, Expense
-# from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
-# from django.contrib.auth.models import User
-from django.utils.timezone import now, localtime
-from datetime import date
+from .models import Employee
 
 
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        fields = ['name', 'phone_number', 'address', 'hire_date', 'employment_status', 'num_children']
+        fields = ['name','employee_side', 'phone_number', 'address', 'hire_date', 'employment_status', 'num_children']
     
     def __init__(self, *args, **kwargs):
         super(EmployeeForm, self).__init__(*args, **kwargs)

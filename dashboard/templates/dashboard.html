@@ -172,10 +172,15 @@
         padding-left: 1.5rem;
       padding-right: 1.5rem;
       }
+      .hidden {
+        display: none;
+    }
+    
   </style>
 {% endblock %}
 
-{% block content %}
+{% block content %} 
+
 <div class="container">
 <div class="section">
 
@@ -194,7 +199,7 @@
   <div class="tester">
     <i class='bx bx-money-withdraw'></i>    
     <div class="company-info">
-      <p style="font-size: 22px;margin-bottom: 0rem;"id="jschart">{{ monthly_income_total }} R</p>
+      <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_income_total }} R</p>
           <p style="font-size: 13px;">Total Salary</p>
       </div>
   </div>
@@ -256,6 +261,18 @@
               </div>
           </div>
       </div>
+      <span class="hidden"id="1">{{ monthly_payments.0 }}</span>
+<span class="hidden"id="2">{{ monthly_payments.1 }}</span>
+<span class="hidden"id="3">{{ monthly_payments.2 }}</span>
+<span class="hidden"id="4">{{ monthly_payments.3 }}</span>
+<span class="hidden"id="5">{{ monthly_payments.4 }}</span>
+<span class="hidden"id="6">{{ monthly_payments.5 }}</span>
+<span class="hidden"id="7">{{ monthly_payments.6 }}</span>
+<span class="hidden"id="8">{{ monthly_payments.7 }}</span>
+<span class="hidden"id="9">{{ monthly_payments.8 }}</span>
+<span class="hidden"id="10">{{ monthly_payments.9 }}</span>
+<span class="hidden"id="11">{{ monthly_payments.10 }}</span>
+<span class="hidden"id="12">{{ monthly_payments.11 }}</span>
 
       <!-- Pie Chart -->
       <div class="col-xl-6 col-lg-6">
@@ -296,6 +313,7 @@
           </div>
       </div>
   </div>
+  <span class="hidden"id="ccc">{{ monthly_payments.3 }}</span>
 
 </div>
 <!-- /.container-fluid -->
@@ -307,25 +325,23 @@
 <script src="/static/js/demo/chart-area-demo.js"></script>
 <script src="/static/js/demo/chart-pie-demo.js"></script>
 
-
-
-
-    
     <div class="start">
     <table class="blueTable">
       <thead>
       <tr>
       <th>Name</th>
       <th>pay date</th>
+      <th>month target</th>
       <th>amount</th>
       </tr>
       </thead>
       <tbody>
         
-        {% for record in last_three_records_salary %}
+        {% for record in payment_history %}
         <tr>
         <td>{{ record.salary_information.employee.name }}</td>
         <td>{{ record.payment_date }}</td>
+        <td>{{ record.salary_information.salary_month | date:"F" }}</td>
         <td>{{ record.amount }} R</td></tr>
         </tr>
     

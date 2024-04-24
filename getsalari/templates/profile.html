@@ -1,78 +1,64 @@
 {% extends 'base.html' %}
 
-
 {% block head %}
     {{ block.super }}
     <style>
-        /* استایل فرم */
-        .form-text {
-            max-width: 400px;
-            margin: 20px auto; /* افزودن فاصله از بالا */
+        /* استایل جدول */
+        .table-container {
+            max-width: 800px;
+            margin: 20px auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* استایل ورودی‌های فرم */
-        .form-text input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
+        /* استایل دکمه‌ها */
+        .btn {
+            margin-right: 5px;
         }
 
-        /* استایل دکمه ارسال فرم */
-        .form-text button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* تغییر رنگ دکمه هنگام هاور (hover) */
-        .form-text button:hover {
-            background-color: #0056b3;
-        }
-        
-        /* اضافه کردن استایل به ورودی‌های فرم هنگام فوکوس */
-        .form-text input:focus {
-            outline: none;
-            border-color: #007bff; /* یا رنگ دلخواه برای تغییر رنگ حاشیه */
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* یا هر جایگزین دیگری که دوست دارید */
-        }
-        /* استایل متن "Edit Employee" */
-        .add-employee-title {
-            color: #007bff; /* یا رنگ دلخواه برای متن */
-            font-size: 24px; /* یا اندازه دلخواه فونت */
-            /* دیگر استایل‌های دلخواه خود را اضافه کنید */
+        /* استایل سرتیتر جدول */
+        .table-header {
+            font-size: 20px;
+            margin-bottom: 10px;
         }
     </style>
 {% endblock %}
 
-
 {% block content %}
-<div class="text">
-<div class="container mt-5">
-<h2 class="mb-4 add-employee-title">Add Employee</h2>
-<form method="post" class="form-text">
-    {% csrf_token %}
-    {{ form.as_p }}
-
-    <div class="form-group mt-3">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-danger btn-cancel" onclick="goBack()">Cancel</button>
-    </div>
-</form>
+<div class="table-container">
+    <h2 class="table-header">User Profiles</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Employee Side</th>
+                <th>Hourly Salary</th>
+                <th>Overtime Salary</th>
+                <th>The Right of the Child</th>
+                <th>Ben Kargari</th>
+                <th>Right to Housing</th>
+                <th>Base Years</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for profile in user_profiles %}
+                <tr>
+                    <td>{{ profile.employee_side }}</td>
+                    <td>{{ profile.hourly_salary }}</td>
+                    <td>{{ profile.overtime_salary }}</td>
+                    <td>{{ profile.the_right_of_the_child }}</td>
+                    <td>{{ profile.ben_kargari }}</td>
+                    <td>{{ profile.right_to_housing }}</td>
+                    <td>{{ profile.base_years }}</td>
+                    <td>
+                        <a href="{% url 'edit_profile' profile.pk %}" class="btn btn-primary">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'add_profile' %}" class="btn btn-success">Add New Profile</a>
 </div>
-</div>
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
 {% endblock %}

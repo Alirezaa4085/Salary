@@ -27,10 +27,31 @@ function number_format(number, decimals, dec_point, thousands_sep) {
   return s.join(dec);
 }
 
-const element = document.getElementById('jschart');
-const intValue = parseInt(element.textContent.replace(/,/g, ""));
-console.log(intValue);
-console.log(typeof intValue);
+const Jan = document.getElementById('1');
+const Jann = parseInt(Jan.textContent.replace(/,/g, ""));
+const Feb = document.getElementById('2');
+const Febb = parseInt(Feb.textContent.replace(/,/g, ""));
+const Mar = document.getElementById('3');
+const Marr = parseInt(Mar.textContent.replace(/,/g, ""));
+const Apr = document.getElementById('4');
+const Aprr = parseInt(Apr.textContent.replace(/,/g, ""));
+const May = document.getElementById('5');
+const Mayy = parseInt(May.textContent.replace(/,/g, ""));
+const Jun = document.getElementById('6');
+const Junn = parseInt(Jun.textContent.replace(/,/g, ""));
+const Jul = document.getElementById('7');
+const Jull = parseInt(Jul.textContent.replace(/,/g, ""));
+const Aug = document.getElementById('8');
+const Augg = parseInt(Aug.textContent.replace(/,/g, ""));
+const Sep = document.getElementById('9');
+const Sepp = parseInt(Sep.textContent.replace(/,/g, ""));
+const Oct = document.getElementById('10');
+const Octt = parseInt(Oct.textContent.replace(/,/g, ""));
+const Nov = document.getElementById('11');
+const Novv = parseInt(Nov.textContent.replace(/,/g, ""));
+const Dec = document.getElementById('12');
+const Decc = parseInt(Dec.textContent.replace(/,/g, ""));
+
 // Area Chart Example
 var ctx = document.getElementById("myAreaChart");
 var myLineChart = new Chart(ctx, {
@@ -50,7 +71,7 @@ var myLineChart = new Chart(ctx, {
       pointHoverBorderColor: "rgba(78, 115, 223, 1)",
       pointHitRadius: 10,
       pointBorderWidth: 2,
-      data: [0, 10000000, intValue, 25000000, 17000000, 32000000, 20000000, 25000000, 15000000, 30000000, 25000000, 40000000],
+      data: [Jann, Febb, Marr, Aprr, Mayy, Junn, Jull, Augg, Sepp, Octt, Novv, Dec],
     }],
   },
   options: {
@@ -120,25 +141,3 @@ var myLineChart = new Chart(ctx, {
     }
   }
 });
-
-// تابع برای به‌روز‌رسانی نمودار
-function updateChart() {
-  $.ajax({
-      url: '/getsalari/monthly_totals_json/',
-
-      type: 'GET',
-      success: function(data) {
-          // به روز رسانی داده‌های نمودار
-          myLineChart.data.datasets[0].data = [data.monthly_income_total, data.monthly_expenses_total];
-          myLineChart.update();
-      },
-      error: function(xhr, errmsg, err) {
-          console.log(xhr.status + ": " + xhr.responseText); // نمایش خطا در صورت وقوع
-      }
-  });
-}
-
-// فراخوانی تابع updateChart هر چند ثانیه
-setInterval(updateChart, 5000); // برای مثال، هر 5 ثانیه
-
-

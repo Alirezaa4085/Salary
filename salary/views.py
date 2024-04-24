@@ -1,53 +1,53 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
-# from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-# from django.http import JsonResponse 
 from .forms import PaymentForm 
-from getsalari.models import UserProfile, Employee, SalaryInformation, PaymentHistory
-from datetime import datetime, timedelta
-# from django.http import JsonResponse
+from .models import Employee
+from .models import SalaryInformation, PaymentHistory
+from datetime import datetime
 from django.urls import reverse
-from django.db.models import Sum
+from django.db import transaction
+
 
 ##############---------------------------------------------------------------------------------------------------------##############
 
 #Calculating salary for every employee
 def calculate_salary(request):
-    
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    employees = Employee.objects.filter(user=request.user)
+    # یافتن کاربری که لاگین کرده است
+    current_user = request.user
 
-    if not employees.exists():
-        employees = []
+    # یافتن تمامی کارمندان مربوط به کاربر لاگین شده
+    employees = Employee.objects.filter(user=current_user)
 
+    # ایجاد یک لیست برای نگهداری اطلاعات محاسبات شده
+    calculated_salaries = []
 
-    current_month = datetime.now().replace(day=1)  # تاریخ اولین روز از ماه جاری
-    for employee in employees:
-        # محاسبه مقدارهای مورد نظر از طریق user_profile و employee
-        total_salary = (
-            user_profile.hourly_salary * 210 +
-            user_profile.overtime_salary*0 +
-            user_profile.the_right_of_the_child * employee.num_children +
-            user_profile.ben_kargari +
-            user_profile.right_to_housing +
-            user_profile.base_years
-        )
+    # اجرای عملیات محاسبات برای هر کارمند
+    with transaction.atomic():  # استفاده از تراکنش برای اطمینان از انجام همه عملیات با موفقیت
+        current_month = datetime.now().replace(day=1)  # تاریخ اولین روز از ماه جاری
+        for employee in employees:
+            # محاسبه مقدارهای مورد نظر از طریق user_profile و employee
+            total_salary = (
+                employee.employee_side.hourly_salary * 210 +
+                employee.employee_side.overtime_salary * 0 +
+                employee.employee_side.the_right_of_the_child * employee.num_children +
+                employee.employee_side.ben_kargari +
+                employee.employee_side.right_to_housing +
+                employee.employee_side.base_years
+            )
 
-        # ایجاد یک رکورد جدید در جدول SalaryInformation
-        salary_info, created = SalaryInformation.objects.get_or_create(
-            employee=employee,
-            salary_month=current_month,
-            defaults={
-                'monthly_income': total_salary,  # مقدار ماهیانه درآمد محاسبه شده
-                'monthly_expenses': 0,  # مقدار ماهیانه هزینه‌ها محاسبه شده (در اینجا صفر قرار داده شده است)
-            }
-        )
+            # ایجاد یک رکورد جدید در جدول SalaryInformation
+            salary_info, created = SalaryInformation.objects.get_or_create(
+                employee=employee,
+                salary_month=current_month,
+                defaults={
+                    'monthly_income': total_salary,  # مقدار ماهیانه درآمد محاسبه شده
+                    'monthly_expenses': 0,  # مقدار ماهیانه هزینه‌ها محاسبه شده (در اینجا صفر قرار داده شده است)
+                }
+            )
 
-    # اطلاعات محاسبه شده را از جدول SalaryInformation بخوانید
-    calculated_salaries = SalaryInformation.objects.filter(employee__user=request.user)
+            # افزودن اطلاعات محاسبات شده به لیست
+            calculated_salaries.append(salary_info)
 
     context = {
-        'user_profile': user_profile,
         'calculated_salaries': calculated_salaries,
     }
     return render(request, 'salary_list.html', context)
@@ -59,7 +59,7 @@ def salary_pay(request, SalaryInformation_id):
         form = PaymentForm(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
-            payment_date = form.cleaned_data['initial_payment_date']  # دریافت تاریخ از فرم
+            payment_date = form.cleaned_data['payment_date']  # دریافت تاریخ از فرم
 
             
             # Create a new PaymentHistory instance

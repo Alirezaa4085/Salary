@@ -1,18 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.http import JsonResponse 
 from .forms import EmployeeForm, EditEmployeeForm 
-from getsalari.models import UserProfile, Employee, SalaryInformation, PaymentHistory
-from datetime import datetime, timedelta
+from .models import Employee
+from account.models import UserProfile
 from django.http import JsonResponse
-from django.urls import reverse
-from django.db.models import Sum
 
 
 #add employee
 def employee_form_view(request):
-    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    # user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         form = EmployeeForm(request.POST)
@@ -24,7 +20,12 @@ def employee_form_view(request):
         else:
             print(form.errors)
     else:
+        # فیلتر کردن مقادیر فرم بر اساس کاربر لاگین شده
+        user_employee_sides = UserProfile.objects.filter(user=request.user)
         form = EmployeeForm()
+        # انتخاب تنها آیتم‌هایی که مربوط به کاربر لاگین شده است
+        form.fields['employee_side'].queryset = user_employee_sides
+        form.fields['employee_side'].label_from_instance = lambda obj: "%s" % obj.employee_side
 
     return render(request, 'employee_form.html', {'form': form})
 

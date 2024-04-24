@@ -1,23 +1,7 @@
 from django import forms
-from .models import UserProfile, Employee, Expense
-# from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
-# from django.contrib.auth.models import User
 from django.utils.timezone import now, localtime
-from datetime import date
+from employee.models import Employee
 
-
-
-class UserProfileForm(forms.ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['company_name', 'phone_number', 'hourly_salary', 'overtime_salary', 'the_right_of_the_child', 'ben_kargari', 'right_to_housing', 'base_years']
-
-
-class ExpenseForm(forms.ModelForm):
-    class Meta:
-        model = Expense
-        fields = ['employee', 'expense_category', 'amount', 'expense_date']
 
 
 class EmployeeSearchForm(forms.Form):
