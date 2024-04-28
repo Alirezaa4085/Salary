@@ -24,7 +24,7 @@ class Employee(models.Model):
 
 @receiver(pre_save, sender=Employee)
 def update_num_children(sender, instance, **kwargs):
-    if instance.pk is not None:  # چک کنید آیا این یک نمونه جدید است یا نه
+    if instance.pk is not None:
         try:
             old_instance = sender.objects.get(pk=instance.pk)
             if old_instance.employment_status and not instance.employment_status:

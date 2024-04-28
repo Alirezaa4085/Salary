@@ -59,23 +59,23 @@
     <form method="post" action="{% url 'employee_form_view' %}">
     {% csrf_token %}
     
-    <label for="id_name">Your Name:</label>
+    <label for="id_name">Name:</label>
     {{ form.name }}
 
-    <label for="id_name">Your Side:</label>
+    <label for="id_name">Employee side:</label>
     {{ form.employee_side }}
     
     
-    <label for="id_phone_number">Your Phone Number:</label>
+    <label for="id_phone_number">Phone number:</label>
     {{ form.phone_number }}
     
-    <label for="id_address">Your Address:</label>
+    <label for="id_address">Address:</label>
     {{ form.address }}
     
-    <label for="id_hire_date">Your Hire Date:</label>
+    <label for="id_hire_date">Hire date:</label>
     {{ form.hire_date }}
      
-    <label for="id_employment_status">Your Employment Status:</label>
+    <label for="id_employment_status">Employment status:</label>
     {{ form.employment_status }}
     
     <label for="id_num_children" id="numChildrenLabel">Number of Children:</label>

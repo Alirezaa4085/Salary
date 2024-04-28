@@ -22,6 +22,7 @@
   --mytable-color: #f8f9fc;
   --search-color: #414141;
   --stylerow-color: #edf2f7;
+  --table-hover: #f0f8ff94;
 
 
   /* ====== Transition ====== */
@@ -59,9 +60,7 @@ body.dark {
   --mytable-color: #3a3b3c;
   --search-color: #fff;
   --stylerow-color: #212121;
-
-
-
+  --table-hover: #ffffff0f;
 
 }
 
@@ -336,4 +335,3 @@ body.dark .switch::before {
 body.dark .home .text {
   color: var(--text-color);
 }
-

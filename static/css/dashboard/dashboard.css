@@ -1,0 +1,249 @@
+/*
+* Dashboard.css
+* CSS styles for the Dashboard page
+*/
+
+.section {
+    /* Box-sizing is border-box to avoid margin/padding overlapping */
+    box-sizing: border-box;
+
+    /* Flexbox properties for responsive layout */
+    flex: 1 0 10%;
+    height: 100%;
+
+    /* Font size and text color */
+    font-size: 18px;
+    color: white;
+
+    /* Display flex for the child elements */
+    display: flex;
+
+    /* Gap between the child elements */
+    gap: 38px;
+
+    /* Height of the section */
+    height: 50%;
+
+    /* Align items and justify content for the child elements */
+    align-items: center;
+    justify-content: center;
+
+    /* Adjust the width as needed */
+    width: 114%;
+
+    /* Margin left to align the sections */
+    margin-left: -7%;
+}
+
+
+
+.container {
+    /* Padding for the container */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Styles for the sections */
+#section1, #section2, #section3, #section4 {
+    /* Margin and padding for the sections */
+    margin: 11px;
+    padding: 40px;
+
+    /* Transition for the hover effect */
+    transition: var(--tran-05);
+
+    /* Height and width of the sections */
+    height: 150px;
+    background-color: var(--card-color);
+
+    /* Border radius and box shadow */
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0, 0.30) 0px 3px 8px;
+
+    /* Adjust the width as needed */
+    width: 24%;
+
+    /* Adjust the height as needed */
+    height: 20px;
+}
+
+/* Styles for the sections based on their background colors */
+#section1{
+    /* background-color:#7e8988; */
+    border-left: 3px solid #7e8988; /* Add red border to the right */
+}
+#section2{
+    /* background-color:#7e8988; */
+    border-left: 3px solid #7e8988; /* Add red border to the right */
+}
+#section3{
+    /* background-color:#7e8988; */
+    border-left: 3px solid #7e8988; /* Add red border to the right */
+}
+#section4{
+    /* background-color:#7e8988; */
+    border-left: 3px solid #7e8988; /* Add red border to the right */
+}
+
+/* Styles for the text inside the sections */
+.tester {
+    /* Font styles */
+    font-family: 'Your Chosen Font', sans-serif;
+    font-size: 35px;
+    color: var(--text-color);
+
+    /* Transition for the hover effect */
+    transition: var(--tran-02);
+
+    /* Font weight and white space */
+    font-weight: 500;
+    white-space: nowrap;
+
+    /* Opacity and padding */
+    opacity: 1;
+    padding: 0px;
+
+    /* Margin to align the text */
+    margin-top: -30px;
+    margin-left: -20px;
+
+    /* Display flex to center the text */
+    display: flex;
+}
+
+.company-info {
+    /* Margin left to align the text */
+    margin-left: 10px;
+}
+
+/* Styles for the container of the charts */
+.container2 {
+    /* Display flex for the child elements */
+    display: flex;
+
+    /* Flex-direction for the child elements */
+    flex-direction: row;
+
+    /* Align the child elements */
+    align-items: flex-start;
+
+    /* Justify the space between the child elements */
+    justify-content: space-between; /* فضای مساوی بین نمودارها */
+}
+
+/* Styles for the charts */
+.chart-container {
+    /* Width of the charts */
+    width: 45%; /* عرض کلی نمودارها */
+
+    /* Margin and padding for the charts */
+    margin: 20px;
+    padding: 20px;
+
+    /* Background color and border radius */
+    background-color: #f8f8f8;
+    border-radius: 10px;
+}
+
+/* Styles for the tables */
+table.blueTable {
+    /* Width and text-align properties */
+    width: 100%;
+    text-align: left;
+
+    /* Border properties */
+    border-collapse: separate;
+    border-spacing: 0; /* Remove default cell spacing */
+    border-radius: 8px; /* Add border-radius for rounded corners */
+    overflow: hidden; /* Hide overflow to prevent shadows from leaking */
+
+    /* Box-shadow properties */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+}
+
+/* Styles for the table cells */
+table.blueTable td, table.blueTable th {
+    /* Remove border from table cells */
+    border: none;
+
+    /* Padding for the table cells */
+    padding: 8px 12px;
+}
+
+/* Styles for the table body */
+table.blueTable tbody td {
+    /* Font-size and color for the table body */
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+/* Styles for the table header */
+table.blueTable thead {
+    /* Background-color and color for the table header */
+    background-color: var(--table-color);
+    color: var(--text-color);
+
+    /* Transition for the hover effect */
+    transition: var(--tran-05);
+}
+
+/* Styles for the hover effect */
+table.blueTable tbody tr:hover {
+    /* Background-color for the hover effect */
+    background-color: var(--table-hover); /* Choose a light color for hover effect */
+}
+
+/* Styles for the table header cells */
+table.blueTable thead th {
+    /* Font-size and font-weight for the table header cells */
+    font-size: 15px;
+    font-weight: bold;
+
+    /* Text-align for the table header cells */
+    text-align: left;
+}
+
+/* Styles for the table footer */
+table.blueTable tfoot td {
+    /* Font-size for the table footer */
+    font-size: 14px;
+}
+
+/* Styles for the links in the table footer */
+table.blueTable tfoot .links {
+    /* Text-align for the links */
+    text-align: right;
+}
+
+/* Styles for the links in the table footer */
+table.blueTable tfoot .links a {
+    /* Display for the links */
+    display: inline-block;
+
+    /* Background-color, color, and border-radius for the links */
+    background: #1C6EA4;
+    color: #FFFFFF;
+    border-radius: 5px;
+
+    /* Text-decoration for the links */
+    text-decoration: none; /* Remove underline from links */
+}
+
+/* Styles for the hover effect */
+table.blueTable tfoot .links a:hover {
+    /* Background-color for the hover effect */
+    background: #155580; /* Darker color on hover */
+}
+
+/* Styles for the start button */
+.start {
+    /* Padding for the container */
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Styles for hidden elements */
+.hidden {
+    /* Display for the hidden elements */
+    display: none;
+}

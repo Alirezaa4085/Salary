@@ -1,10 +1,12 @@
 from django.db import models
 from employee.models import Employee
+from django.utils import timezone
 
-# Create your models here.
+
 class PaymentHistory(models.Model):
     salary_information = models.ForeignKey('SalaryInformation', on_delete=models.CASCADE)
-    payment_date = models.DateTimeField()
+    payment_date = models.DateField()
+    payment_time = models.TimeField(default=timezone.now)
     amount = models.DecimalField(max_digits=10, decimal_places=0)
 
 class SalaryInformation(models.Model):
@@ -18,3 +20,4 @@ class SalaryInformation(models.Model):
     def save(self, *args, **kwargs):
         self.current_month_balance = self.monthly_income - self.monthly_expenses
         super().save(*args, **kwargs)
+

@@ -1,238 +1,68 @@
 {% extends 'base.html' %}
 {% load humanize %}
 
-
-
 {% block head %}
-<meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>SB Admin 2 - Blank</title>
-
-  {% comment %} <!-- Custom fonts for this template-->
-  <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link
-      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-      rel="stylesheet"> {% endcomment %}
-
-  <!-- Custom styles for this template-->
-  <link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    .section {
-      box-sizing: border-box;
-      flex: 1 0 10%;
-      height: 100%;
-      font-size: 18px;
-      color: white;
-      display: flex;
-      gap: 38px;
-      height: 50%;
-      align-items: center;
-      justify-content: center;
-      width: 114%; /* Adjust the width as needed */
-      {% comment %} margin-left: -88px; {% endcomment %}
-      margin-left: -7%;
-      {% comment %} height: 105px; /* Adjust the height as needed */ {% endcomment %}
-    }
-
-    .container {
-      padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    }
-
-    #section1, #section2, #section3, #section4 {
-      margin: 11px;
-      padding: 40px;
-      transition: var(--tran-05);
-      height: 150px;
-      background-color: var(--card-color);
-      box-shadow: rgba(0, 0, 0, 0.30) 0px 3px 8px;
-      border-radius: 2px;
-      width: 24%; /* Adjust the width as needed */
-      height: 20px; /* Adjust the height as needed */
-
-    }
-
-    #section1{
-      {% comment %} background-color:#e0eae9 {% endcomment %}
-      border-left: 3px solid #e0eae9; /* Add red border to the right */
-
-    }
-    #section2{
-      {% comment %} background-color:#fbedea {% endcomment %}
-      border-left: 3px solid #fbedea; /* Add red border to the right */
-
-    }
-    #section3{
-      {% comment %} background-color:#eaf3fc {% endcomment %}
-      border-left: 3px solid #eaf3fc; /* Add red border to the right */
-
-    }
-    #section4{
-      {% comment %} background-color:#fdf9f0 {% endcomment %}
-      border-left: 3px solid #fdf9f0; /* Add red border to the right */
-
-    }
-    .tester {
-      font-family: 'Your Chosen Font', sans-serif;
-      font-size: 35px;
-      color: var(--text-color);
-      transition: var(--tran-02);
-      font-weight: 500;
-      white-space: nowrap;
-      opacity: 1;
-      padding: 0px;
-      margin-top: -30px;
-      margin-left: -20px;
-      display: flex; /* Add flex display */
-
-
-
-    }
-
-    .company-info {
-      margin-left: 10px; /* Adjust the margin as needed */
-  }
-    .container2 {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: space-between; /* فضای مساوی بین نمودارها */
-    }
-
-    .chart-container {
-      width: 45%; /* عرض کلی نمودارها */
-      margin: 20px;
-      padding: 20px;
-      background-color: #f8f8f8;
-      border-radius: 10px;
-    }
-    table.blueTable {
-      width: 100%;
-      text-align: left;
-      border-collapse: separate;
-      border-spacing: 0; /* Remove default cell spacing */
-      border-radius: 8px; /* Add border-radius for rounded corners */
-      overflow: hidden; /* Hide overflow to prevent shadows from leaking */
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
-  }
-  
-    table.blueTable td, table.blueTable th {
-      border: none;
-      padding: 8px 12px;
-    }
-    table.blueTable tbody td {
-      font-size: 13px;
-      color: var(--text-color); /* Text color for header cells */
-    }
-    table.blueTable thead {
-      background-color: var(--table-color); /* Choose a color that complements your design */
-      color: var(--text-color); /* Text color for header cells */
-      transition: var(--tran-05);
-   }
-   table.blueTable tbody tr:hover {
-    background-color: #F0F8FF; /* Choose a light color for hover effect */
-    }
- 
-    table.blueTable thead th {
-      font-size: 15px;
-      font-weight: bold;
-      text-align: left;
-    }
-    table.blueTable tfoot td {
-      font-size: 14px;
-    }
-    table.blueTable tfoot .links {
-      text-align: right;
-    }
-    table.blueTable tfoot .links a {
-      display: inline-block;
-      background: #1C6EA4;
-      color: #FFFFFF;
-      padding: 8px 12px;
-      border-radius: 5px;
-      text-decoration: none; /* Remove underline from links */
-   }
-   table.blueTable tfoot .links a:hover {
-    background: #155580; /* Darker color on hover */
- }
-
-      .start {
-        padding-left: 1.5rem;
-      padding-right: 1.5rem;
-      }
-      .hidden {
-        display: none;
-    }
-    
-  </style>
+<!-- The page title, which appears in the browser tab -->
+<title>{{ username }}'s Dashboard</title>
+<!-- The stylesheets to use for the page -->
+<link href="/static/css/sb-admin-2.min.css" rel="stylesheet">
+<link href="/static/css/dashboard/dashboard.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %} 
 
 <div class="container">
-<div class="section">
-
-
-  <div id="section1">
+  <div class="section">
+    
+    <div id="section1">
       <div class="tester">
-          <i class='bx bxs-group'></i>
+        <i class='bx bxs-user'></i>
+        <div class="company-info">
+          <p style="font-size: 25px;margin-bottom: 0rem;">{{ username }}</p>
+          <p style="font-size: 13px;">...</p>
+        </div>
+      </div>
+    </div>
+
+      <div id="section2">
+        <div class="tester">
+          <i class='bx bx-money-withdraw'></i>    
+        <div class="company-info">
+          <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_income_total }} R</p>
+          <p style="font-size: 13px;">Total {% now "F" %} Salary</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="section3">
+      <div class="tester">
+        <i class='bx bxs-calculator' ></i>     
           <div class="company-info">
-              <p style="font-size: 22px; margin-bottom: 0rem;">{{ current_user_employees }}</p>
-              <p style="font-size: 13px;">Total Employee</p>
+            <p style="font-size: 22px;margin-bottom: 0rem;" >{{ monthly_expenses_total }} R</p>
+            <p style="font-size: 13px;">total {% now "F" %} oustanding</p>
+          </div>
+        </div>
+      </div>
+
+    <div id="section4">
+      <div class="tester">
+        <i class='bx bxs-group'></i>
+          <div class="company-info">
+            <p style="font-size: 22px; margin-bottom: 0rem;">{{ current_user_employees }}</p>
+            <p style="font-size: 13px;">Total Employee</p>
           </div>
       </div>
-  </div>
-{% comment %} #TODO month gheyd shavad {% endcomment %}
-<div id="section2">
-  <div class="tester">
-    <i class='bx bx-money-withdraw'></i>    
-    <div class="company-info">
-      <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_income_total }} R</p>
-          <p style="font-size: 13px;">Total Salary</p>
-      </div>
-  </div>
-</div>
+    </div>
 
-<div id="section3">
-  <div class="tester">
-    <i class='bx bxs-calculator' ></i>     
-    <div class="company-info">
-      <p style="font-size: 22px;margin-bottom: 0rem;" >{{ monthly_expenses_total }} R</p>
-          <p style="font-size: 13px;">total oustanding</p>
-      </div>
-  </div>
-</div>
-
-<div id="section4">
-  <div class="tester">
-    <i class='bx bx-message-square-dots' ></i>      
-    <div class="company-info">
-      <p style="font-size: 22px;margin-bottom: 0rem;">35</p>
-          <p style="font-size: 13px;">total Requests</p>
-      </div>
-  </div>
-</div>
   </div>
 </div>
 
 <div id="page-top">
-<!-- Content -->
-<div class="container-fluid">
 
-  <!-- Charts Area -->
-  <div class="row">
+  <div class="container-fluid">
+    
+    
+    <div class="row">
 
       <!-- Area Chart -->
       <div class="col-xl-6 col-lg-6">
@@ -261,20 +91,9 @@
               </div>
           </div>
       </div>
-      <span class="hidden"id="1">{{ monthly_payments.0 }}</span>
-<span class="hidden"id="2">{{ monthly_payments.1 }}</span>
-<span class="hidden"id="3">{{ monthly_payments.2 }}</span>
-<span class="hidden"id="4">{{ monthly_payments.3 }}</span>
-<span class="hidden"id="5">{{ monthly_payments.4 }}</span>
-<span class="hidden"id="6">{{ monthly_payments.5 }}</span>
-<span class="hidden"id="7">{{ monthly_payments.6 }}</span>
-<span class="hidden"id="8">{{ monthly_payments.7 }}</span>
-<span class="hidden"id="9">{{ monthly_payments.8 }}</span>
-<span class="hidden"id="10">{{ monthly_payments.9 }}</span>
-<span class="hidden"id="11">{{ monthly_payments.10 }}</span>
-<span class="hidden"id="12">{{ monthly_payments.11 }}</span>
-
+      
       <!-- Pie Chart -->
+      <!-- TODO use fillform for this chart-->
       <div class="col-xl-6 col-lg-6">
           <div class="card shadow mb-4">
               <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -315,39 +134,49 @@
   </div>
   <span class="hidden"id="ccc">{{ monthly_payments.3 }}</span>
 
+
+  <span class="hidden"id="1">{{ monthly_payments.0 }}</span>
+  <span class="hidden"id="2">{{ monthly_payments.1 }}</span>
+  <span class="hidden"id="3">{{ monthly_payments.2 }}</span>
+  <span class="hidden"id="4">{{ monthly_payments.3 }}</span>
+  <span class="hidden"id="5">{{ monthly_payments.4 }}</span>
+  <span class="hidden"id="6">{{ monthly_payments.5 }}</span>
+  <span class="hidden"id="7">{{ monthly_payments.6 }}</span>
+  <span class="hidden"id="8">{{ monthly_payments.7 }}</span>
+  <span class="hidden"id="9">{{ monthly_payments.8 }}</span>
+  <span class="hidden"id="10">{{ monthly_payments.9 }}</span>
+  <span class="hidden"id="11">{{ monthly_payments.10 }}</span>
+  <span class="hidden"id="12">{{ monthly_payments.11 }}</span>
 </div>
-<!-- /.container-fluid -->
 
 <!-- Page level plugins -->
 <script src="/static/vendor/chart.js/Chart.min.js"></script>
-
 <!-- Page level custom scripts -->
 <script src="/static/js/demo/chart-area-demo.js"></script>
 <script src="/static/js/demo/chart-pie-demo.js"></script>
 
-    <div class="start">
-    <table class="blueTable">
-      <thead>
+<div class="start">
+  <table class="blueTable">
+    <thead>
       <tr>
-      <th>Name</th>
-      <th>pay date</th>
-      <th>month target</th>
-      <th>amount</th>
+        <th>Name</th>
+        <th>pay date</th>
+        <th>month target</th>
+        <th>amount</th>
       </tr>
-      </thead>
-      <tbody>
-        
-        {% for record in payment_history %}
+    </thead>
+
+    <tbody>
+      {% for record in payment_history %}
         <tr>
         <td>{{ record.salary_information.employee.name }}</td>
         <td>{{ record.payment_date }}</td>
         <td>{{ record.salary_information.salary_month | date:"F" }}</td>
         <td>{{ record.amount }} R</td></tr>
         </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
     
-        {% endfor %}
-      </tbody>
-      </tr>
-      </table>
-    </div>
 {% endblock %}
