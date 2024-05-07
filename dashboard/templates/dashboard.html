@@ -28,7 +28,7 @@
         <div class="tester">
           <i class='bx bx-money-withdraw'></i>    
         <div class="company-info">
-          <p style="font-size: 22px;margin-bottom: 0rem;">{{ monthly_income_total }} R</p>
+          <p style="font-size: 22px;margin-bottom: 0rem;" id:"total_income">{{ monthly_income_total }} R</p>
           <p style="font-size: 13px;">Total {% now "F" %} Salary</p>
         </div>
       </div>
@@ -38,7 +38,7 @@
       <div class="tester">
         <i class='bx bxs-calculator' ></i>     
           <div class="company-info">
-            <p style="font-size: 22px;margin-bottom: 0rem;" >{{ monthly_expenses_total }} R</p>
+            <p style="font-size: 22px;margin-bottom: 0rem;" id="total_expenses">{{ monthly_expenses_total }} R</p>
             <p style="font-size: 13px;">total {% now "F" %} oustanding</p>
           </div>
         </div>
@@ -53,7 +53,6 @@
           </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -119,14 +118,12 @@
                   </div>
                   <div class="mt-4 text-center small">
                       <span class="mr-2">
-                          <i class="fas fa-circle text-primary"></i> Direct
+                          <i class="fas fa-circle text-primary"></i> Total May Salary
                       </span>
                       <span class="mr-2">
-                          <i class="fas fa-circle text-success"></i> Social
+                          <i class="fas fa-circle text-success"></i> total May oustanding
                       </span>
-                      <span class="mr-2">
-                          <i class="fas fa-circle text-info"></i> Referral
-                      </span>
+                      
                   </div>
               </div>
           </div>
@@ -147,6 +144,8 @@
   <span class="hidden"id="10">{{ monthly_payments.9 }}</span>
   <span class="hidden"id="11">{{ monthly_payments.10 }}</span>
   <span class="hidden"id="12">{{ monthly_payments.11 }}</span>
+  <span class="hidden"id="14">{{ monthly_expenses_total }}</span>
+  <span class="hidden" id="13">{{ monthly_income_total }}</span>
 </div>
 
 <!-- Page level plugins -->

@@ -25,7 +25,7 @@ class EmployeeForm(forms.ModelForm):
             'phone_number',
             'address',
             'hire_date',
-            'employment_status',
+            'marital_status',
             'num_children',
         ]
 
@@ -33,10 +33,10 @@ class EmployeeForm(forms.ModelForm):
         super(EmployeeForm, self).__init__(*args, **kwargs)
         self.fields['num_children'].widget = forms.HiddenInput()
 
-        # If the user has submitted the form and the employment_status field
+        # If the user has submitted the form and the marital_status field
         # is checked, then render the num_children field as a normal number
         # input field. Otherwise, hide it.
-        if 'employment_status' in self.data and self.data['employment_status'] == 'True':
+        if 'marital_status' in self.data and self.data['marital_status'] == 'True':
             self.fields['num_children'].widget = forms.NumberInput()
 
         self.fields['hire_date'].widget = forms.DateInput(
@@ -61,9 +61,10 @@ class EditEmployeeForm(forms.ModelForm):
             'phone_number',
             'address',
             'hire_date',
-            'employment_status',
+            'marital_status',
             'num_children',
         ]
+        
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

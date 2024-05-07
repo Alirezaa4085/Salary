@@ -75,8 +75,8 @@
     <label for="id_hire_date">Hire date:</label>
     {{ form.hire_date }}
      
-    <label for="id_employment_status">Employment status:</label>
-    {{ form.employment_status }}
+    <label for="id_marital_status">marital_status:</label>
+    {{ form.marital_status }}
     
     <label for="id_num_children" id="numChildrenLabel">Number of Children:</label>
 <input type="number" name="num_children" id="id_num_children" {% if form.num_children.value %}value="{{ form.num_children.value }}"{% endif %}>
@@ -89,7 +89,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var employmentStatusField = document.getElementById("id_employment_status");
+        var employmentStatusField = document.getElementById("id_marital_status");
         var numChildrenField = document.getElementById("id_num_children");
         var numChildrenLabel = document.getElementById("numChildrenLabel");
 
@@ -105,7 +105,7 @@
 
         employmentStatusField.addEventListener("change", toggleNumChildrenField);
 
-        // If the employment_status value is pre-set, apply changes
+        // If the marital_status value is pre-set, apply changes
         toggleNumChildrenField();
     });
 </script>

@@ -25,10 +25,23 @@ def calculate_salary(request):
     # Use transaction.atomic to ensure that either all or no changes are made
     # to the database
     with transaction.atomic():
+        missing_employee_side_list = []
         # Get the first day of the current month
         current_month = datetime.now().replace(day=1)
+        all_employees = Employee.objects.filter(user=current_user)
+
         # Loop through the user's employees
-        for employee in employees:
+        for employee in all_employees:
+            # Check if the employee has an associated employee_side
+            if employee.employee_side is None:
+                # Handle the case where employee_side is missing
+                # You can log this or skip calculating the salary for this employee
+                # For example:
+                missing_employee_side_list.append({'id': employee.id, 'name': employee.name})
+                print(f"Employee {employee.id} does not have associated employee_side data.")
+                print(missing_employee_side_list)
+                continue  # Skip to next employee
+
             # Calculate the total salary of the employee for the current month
             total_salary = (
                 employee.employee_side.hourly_salary * 210 +
@@ -55,6 +68,8 @@ def calculate_salary(request):
     # Pass the list of calculated salaries to the template
     context = {
         'calculated_salaries': calculated_salaries,
+        'missing_employee_side_list': missing_employee_side_list,
+
     }
     # Render the template with the context
     return render(request, 'salary_list.html', context)

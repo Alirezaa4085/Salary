@@ -125,31 +125,33 @@
 		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em;  padding-bottom: 1em;">
 			<thead class="mytable">
 				<tr class="mytable">
-					<th>name</th>
-					<th>phone_number</th>
-					<th>Address</th>
-					<th>hire_date</th>
-					<th>marital_status</th>
-					<th>num_children</th>
-					<th>Actions</th>
+					<th>Employee Side</th>
+                    <th>Hourly Salary</th>
+                    <th>Overtime Salary</th>
+                    <th>The Right of the Child</th>
+                    <th>Ben Kargari</th>
+                    <th>Right to Housing</th>
+                    <th>Base Years</th>
+                    <th>Actions</th>
 				</tr>
 			</thead>
 			<tbody class="mytable">
-				{% for employee in employees %}
+                {% for profile in user_profiles %}
 				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} " style="background-color: var(--mytable-color);color: var(--text-color);">
-					<td>{{ employee.name }}</td>
-					<td>{{ employee.phone_number }}</td>
-            		<td>{{ employee.address }}</td>
-					<td>{{ employee.hire_date }}</td>
-					<td>{{ employee.marital_status }}</td>
-					<td>{{ employee.num_children }}</td>
+					<td>{{ profile.employee_side }}</td>
+                    <td>{{ profile.hourly_salary }}</td>
+                    <td>{{ profile.overtime_salary }}</td>
+                    <td>{{ profile.the_right_of_the_child }}</td>
+                    <td>{{ profile.ben_kargari }}</td>
+                    <td>{{ profile.right_to_housing }}</td>
+                    <td>{{ profile.base_years }}</td>
 
 					
 
 
 				<td class="action-buttons">
-					<button class="edit-button" onclick="openEditForm({{ employee.id }})">Edit</button>
-					<button class="delete-button" data-employee-id="{{ employee.id }}">Delete</button>
+					<button class="edit-button" onclick="openEditForm({{ profile.pk }})">Edit</button>
+					<button class="delete-button" data-profile-id="{{ profile.pk }}">Delete</button>
 
 				</td>
 			</tr>
@@ -206,29 +208,42 @@
 			},
 		});
 	
-		$(document).ready(function () {
-			$('.delete-button').on('click', function () {
-				var row = $(this).closest('tr');
-				var employeeId = $(this).data('employee-id');
-		
-				if (confirm('Are you sure you want to delete this employee?')) {
-					$.ajax({
-						type: 'DELETE',
-						url: '/employees/delete/' + employeeId + '/',
-						headers: {
-							'X-CSRFToken': csrftoken
-						},
-						success: function () {
-							var table = $('#example').DataTable();
-							table.row(row).remove().draw(false); 
-						},
-						error: function (xhr, status, error) {
-							alert('یک خطا رخ داده است، لطفاً دوباره تلاش کنید.');
-						}
-					});
-				}
-			});
-		});
+		$('.delete-button').on('click', function () {
+    var row = $(this).closest('tr');
+    var profileId = $(this).data('profile-id');
+    var csrftoken = $("[name=csrfmiddlewaretoken]").val(); // Get CSRF token
+
+    if (confirm('Are you sure you want to delete this profile?')) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/fillform/delete/' + profileId, // Change the URL
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function (response) {
+                // Check if the response contains a success message
+                if (response.message) {
+                    alert(response.message);
+                    // Optionally, you can also remove the row from the table if deletion is successful
+                    var table = $('#example').DataTable();
+                    table.row(row).remove().draw(false);
+                } else {
+                    // Handle unexpected response
+                    alert('Unexpected response from server.');
+                }
+            },
+            error: function (xhr, status, error) {
+                // Check if the response contains an error message
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    alert(xhr.responseJSON.message);
+                } else {
+                    // Handle other errors
+                    alert('An error occurred, please try again.');
+                }
+            }
+        });
+    }
+});
 	</script>
 
 {% endblock %}

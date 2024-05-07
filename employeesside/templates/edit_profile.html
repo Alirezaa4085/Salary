@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+    {{ block.super }}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Form</title>
+    <style>
+   body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+
+        input[type="submit"]{
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+        input[type="button"]{
+            background-color: red;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+
+<form method="post" class="form-text">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="form-group mt-3">
+        <input type="submit" value="Save">
+    <input type="button" value="Cancel" onclick="window.history.back()">
+    </div>
+</form>
+</div>
+</div>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+{% endblock %}

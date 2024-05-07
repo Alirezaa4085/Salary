@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Form</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+
+        input[type="submit"]{
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+        input[type="button"]{
+            background-color: red;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+    {% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+    
+    <label for="id_employee_side">Employee Side:</label>
+    {{ form.employee_side }}
+    
+    <label for="id_hourly_salary">Hourly Salary:</label>
+    {{ form.hourly_salary }}
+    
+    <label for="id_overtime_salary">Overtime Wage:</label>
+    {{ form.overtime_salary }}
+    
+    <label for="id_the_right_of_the_child">the_right_of_the_child:</label>
+    {{ form.the_right_of_the_child }}
+    
+    <label for="id_ben_kargari">ben_kargari:</label>
+    {{ form.ben_kargari }}
+    
+    <label for="id_right_to_housing">right_to_housing:</label>
+    {{ form.right_to_housing }}
+    
+    <label for="id_base_years">Base Years:</label>
+    {{ form.base_years }}
+    
+  
+
+        <input type="submit" value="Save">
+    <input type="button" value="Cancel" onclick="window.history.back()">
+    </form>
+</div>
+{% endblock %}

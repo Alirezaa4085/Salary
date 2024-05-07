@@ -2,55 +2,212 @@
 {% load static %}
 
 {% block head %}
-    {% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" /> {% endcomment %}
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.bootstrap5.css" />
-  
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.0.5/js/dataTables.bootstrap5.js"></script>
-{% endblock %}
+<title>Employees </title>
 
+<!--TODO debug this after release
+<link href="/static/css/Employees/employees.css" rel="stylesheet">
+-->
+
+	<script type="text/javascript">
+		var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value; // Setting CSRF token
+	</script>
+	<meta name="csrf-token" content="{{ csrf_token }}"> <!-- CSRF token -->
+	<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css\jquery.dataTables.min.css' %}">
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+<style>
+	/*Overrides for Tailwind CSS */
+	/*Form fields*/
+	.dataTables_wrapper select,
+	.dataTables_wrapper .dataTables_filter input {
+		color: #4a5568;
+		/*text-gray-700*/
+		padding-left: 1rem;
+		/*pl-4*/
+		padding-right: 1rem;
+		/*pl-4*/
+		padding-top: .5rem;
+		/*pl-2*/
+		padding-bottom: .5rem;
+		/*pl-2*/
+		line-height: 1.25;
+		/*leading-tight*/
+		border-width: 2px;
+		/*border-2*/
+		border-radius: .25rem;
+		border-color: var(--stylerow-color);
+		/*border-gray-200*/
+		background-color: var(--stylerow-color);
+		{% comment %} transition: var(--tran-05); {% endcomment %}
+
+		/*bg-gray-200*/
+	}
+
+		/* Styling for row hover */
+		table.dataTable.hover tbody tr:hover,
+		table.dataTable.display tbody tr:hover {
+			background-color: red; /* Background color on hover */
+			
+		}
+
+		/* Styling for pagination buttons */
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			font-weight: 700;
+			border-radius: .25rem;
+			border: 1px solid transparent;
+		}
+
+		/* Styling for current selected pagination button */
+		.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+			color: #fff !important;
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			font-weight: 700;
+			border-radius: .25rem;
+			background: #667eea !important;
+			border: 1px solid transparent;
+		}
+
+		/* Styling for pagination button hover */
+		.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+			color: #fff !important;
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			font-weight: 700;
+			border-radius: .25rem;
+			background: #667eea !important;
+			border: 1px solid transparent;
+		}
+
+		/* Adding padding to bottom border */
+		table.dataTable.no-footer {
+			border-bottom: 1px solid #e2e8f0;
+			margin-top: 0.75em;
+			margin-bottom: 0.75em;
+		}
+
+		/* Changing color of responsive icon */
+		table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before,
+		table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+			background-color: #667eea !important;
+		}
+		
+		/* Styling for back-to-top button */
+		.btt {
+			position: absolute;
+			top: 4.0%; 
+			left: 23%;
+			z-index: 999; /* Highest z-index */
+		}
+
+		/* Styling for custom table */
+		.mytable{
+			background-color: var(--mytable-color);
+			color: var(--text-color);
+			{% comment %} transition: var(--tran-05); {% endcomment %}
+
+		}
+</style>
+
+{% endblock %}
+	
 {% block content %}
 
+<div class="container w-full md:w-5/6 xl:w-5/6  mx-auto px-0">
+	
+    <h1 class="flex items-center font-sans font-bold break-normal text-indigo-500 px-2 py-8 text-xl md:text-2xl">
+        Employee List
+    </h1>
 
-    <table id="example" class="table table-striped" style="width:100%">
-      <thead>
-          <tr>
-            <th>Payment Date</th>
-            <th>Amount</th>
-            <th>Action</th>
-          </tr>
-      </thead>
-      <tbody>
-        {% for payment in payment_history %}
-    <tr>
-      <td>{{ payment.payment_date }}</td>
-      <td>{{ payment.amount }}</td>
-      <td>
-        <form action="{% url 'delete_payment' payment.id %}" method="post">
-          {% csrf_token %}
-          <button type="submit">Delete</button>
-          <button class="delete-button">Deleted</button>
-  
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-      </tbody>
-      <tfoot>
-          <tr>
-            <th>Payment Date</th>
-            <th>Amount</th>
-            <th>Action</th>
-          </tr>
-      </tfoot>
-  </table>
+	<button class="bg-blue-500 text-white font-bold py-2 px-5 rounded mr-2 btt" onclick="redirectToGoogle()">
+		New Employee
+		</button>
+
+    <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white mytable">
+		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em;  padding-bottom: 1em;">
+			<thead class="mytable">
+				<tr class="mytable">
+					<th style="text-align: left;">Payment Date</th>
+            <th style="text-align: left;">Amount</th>
+            <th style="text-align: left;">Action</th>
+				</tr>
+			</thead>
+			<tbody class="mytable">
+				{% for payment in payment_history %}
+				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} " style="background-color: var(--mytable-color);color: var(--text-color);">
+					<td>{{ payment.payment_date }}</td>
+					<td>{{ payment.amount }}</td>
 
 
+				<td class="action-buttons">
+					<button class="delete-button" data-employee-id="{{ payment.id }}">Delete</button>
 
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+</table>
+</div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
-  new DataTable('#example');
+   if (typeof jQuery == 'undefined') {
+       console.log('jQuery is not loaded');
+   } else {
+       console.log('jQuery is loaded');
+   }
 </script>
+
+<!--Datatables -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        
+
+
+	<script>
+		$(document).ready(function() {
+
+			var table = $('#example').DataTable({
+					responsive: true
+				})
+				.columns.adjust().responsive.recalc();
+		});
+	</script>
+  
+	
+	<script type="text/javascript">
+		var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+		var csrftoken = $("meta[name='csrf-token']").attr("content");
+
+		$.ajaxSetup({
+			beforeSend: function(xhr) {
+				if (!this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			},
+		});
+	
+		$(document).ready(function () {
+			$('.delete-button').on('click', function () {
+				var row = $(this).closest('tr');
+				var paymentid = $(this).data('employee-id');
+		
+				if (confirm('Are you sure you want to delete this employee?')) {
+					$.ajax({
+						type: 'DELETE',
+            				url: '../../../../payment/delete/' + paymentid + '/',
+						headers: {
+							'X-CSRFToken': csrftoken
+						},
+						success: function () {
+							var table = $('#example').DataTable();
+							table.row(row).remove().draw(false); 
+						},
+						error: function (xhr, status, error) {
+							alert('یک خطا رخ داده است، لطفاً دوباره تلاش کنید.');
+						}
+					});
+				}
+			});
+		});
+	</script>
 
 {% endblock %}

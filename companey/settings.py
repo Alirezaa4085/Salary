@@ -39,11 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'getsalari',
     'dashboard',
     'employee',
     'salary',
-    'account'
+    'account',
+    'employeesside',
 ]
 
 MIDDLEWARE = [

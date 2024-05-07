@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('phone_number', models.CharField(max_length=15)),
                 ('address', models.TextField()),
                 ('hire_date', models.DateField(blank=True, null=True)),
-                ('employment_status', models.BooleanField(default=False)),
+                ('marital_status', models.BooleanField(default=False)),
                 ('num_children', models.PositiveIntegerField(blank=True, default=0)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

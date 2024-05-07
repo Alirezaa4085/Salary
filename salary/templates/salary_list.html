@@ -115,7 +115,6 @@
 {% block content %}
 
 
-
 <div class="container w-full md:w-5/6 xl:w-5/6  mx-auto px-0">
 	
     <h1 class="flex items-center font-sans font-bold break-normal text-indigo-500 px-2 py-8 text-xl md:text-2xl">
@@ -143,15 +142,32 @@
 					<td>{{ salary_info.current_month_balance }}</td>
 					
             <td class="action-buttons">
-				<button class="pay-button" onclick="openEditForm({{ salary_info.id }})">Pay</button>
-				<button class="pay-button" onclick="openEditedForm({{ salary_info.employee_id }}, '{{ salary_info.salary_month|date:"F" }}')">history</button>
-
-				
-            </td>
+        <button class="pay-button" onclick="openEditForm({{ salary_info.id }})">Pay</button>
+        <button class="pay-button" onclick="openEditedForm({{ salary_info.employee_id }}, '{{ salary_info.salary_month|date:"F" }}')">history</button>
+        
+        
+    </td>
         </tr>
         {% endfor %}
+
+		{% for employee_id in missing_employee_side_list %}
+				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" style="background-color: var(--mytable-color);color: var(--text-color);">
+                        <!-- You might need to fetch the employee name using the employee_id -->
+    				<td>{{ employee_id.name }}</td>
+
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>
+						<a href="{% url 'edit_employee' employee_id=employee_id.id %}">َEdit</a>
+                    </td>
+                </tr>
+                {% endfor %}
     </tbody>
 </table>
+</div>
+</div>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
