@@ -121,8 +121,8 @@
 		New Employee
 		</button>
 
-    <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white mytable">
-		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em;  padding-bottom: 1em;">
+    <div id="recipients" class="p-8 mt-6 lg:mt-0 rounded shadow bg-white mytable">
+		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em; padding-bottom: 1em;">
 			<thead class="mytable">
 				<tr class="mytable">
 					<th>name</th>
@@ -139,7 +139,7 @@
 				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %} " style="background-color: var(--mytable-color);color: var(--text-color);">
 					<td>{{ employee.name }}</td>
 					<td>{{ employee.phone_number }}</td>
-            		<td>{{ employee.address }}</td>
+					<td>{{ employee.address }}</td>
 					<td>{{ employee.hire_date }}</td>
 					<td>{{ employee.marital_status }}</td>
 					<td>{{ employee.num_children }}</td>
@@ -154,17 +154,18 @@
 				</td>
 			</tr>
 			{% endfor %}
-		</tbody>
-</table>
+			</tbody>
+		</table>
+	</div>
 </div>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
-   if (typeof jQuery == 'undefined') {
-       console.log('jQuery is not loaded');
-   } else {
-       console.log('jQuery is loaded');
-   }
+	if (typeof jQuery == 'undefined') {
+		console.log('jQuery is not loaded');
+	} else {
+		console.log('jQuery is loaded');
+	}
 </script>
 
 <!--Datatables -->
@@ -188,12 +189,12 @@
         }
     </script>
 
-	<script>
-		function redirectToGoogle() {
-			window.location.href = 'add/';
-		}
-	</script>
-	
+		<script>
+			function redirectToGoogle() {
+				window.location.href = 'add/';
+			}
+		</script>
+		
 	<script type="text/javascript">
 		var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 		var csrftoken = $("meta[name='csrf-token']").attr("content");
