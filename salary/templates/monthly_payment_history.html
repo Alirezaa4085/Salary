@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block head %}
-<title>Employees </title>
+<title> History </title>
 
 <!--TODO debug this after release
 <link href="/static/css/Employees/employees.css" rel="stylesheet">
@@ -114,12 +114,8 @@
 <div class="container w-full md:w-5/6 xl:w-5/6  mx-auto px-0">
 	
     <h1 class="flex items-center font-sans font-bold break-normal text-indigo-500 px-2 py-8 text-xl md:text-2xl">
-        Employee List
+        History List
     </h1>
-
-	<button class="bg-blue-500 text-white font-bold py-2 px-5 rounded mr-2 btt" onclick="redirectToGoogle()">
-		New Employee
-		</button>
 
     <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white mytable">
 		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em;  padding-bottom: 1em;">
@@ -193,7 +189,7 @@
 				if (confirm('Are you sure you want to delete this employee?')) {
 					$.ajax({
 						type: 'DELETE',
-            				url: '../../../../payment/delete/' + paymentid + '/',
+							url: '../../../../payment/delete/' + paymentid + '/',
 						headers: {
 							'X-CSRFToken': csrftoken
 						},

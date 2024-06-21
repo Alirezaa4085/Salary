@@ -1,10 +1,16 @@
 /* Google Font Import - Poppins */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
+}
+
+.no-transition,
+.no-transition * {
+  transition: none !important;
 }
 
 :root {
@@ -76,6 +82,7 @@ body.dark {
   transition: var(--tran-05);
   z-index: 100;
 }
+
 .sidebar.close {
   width: 88px;
 }
@@ -117,6 +124,7 @@ body.dark {
   white-space: nowrap;
   opacity: 1;
 }
+
 .sidebar.close .text {
   opacity: 0;
 }
@@ -132,10 +140,12 @@ body.dark {
   display: flex;
   align-items: center;
 }
+
 .sidebar header .logo-text {
   display: flex;
   flex-direction: column;
 }
+
 header .image-text .name {
   margin-top: 2px;
   font-size: 30px;
@@ -190,7 +200,8 @@ body.dark .sidebar header .toggle {
 }
 
 .sidebar li.search-box {
-  display: none; /* این خط را اضافه کنید */
+  display: none;
+  /* این خط را اضافه کنید */
   border-radius: 6px;
   background-color: var(--primary-color-light);
   cursor: pointer;
@@ -209,6 +220,7 @@ body.dark .sidebar header .toggle {
   font-weight: 500;
   transition: var(--tran-05);
 }
+
 .sidebar li a {
   list-style: none;
   height: 100%;
@@ -225,10 +237,12 @@ body.dark .sidebar header .toggle {
 .sidebar li a:hover {
   background-color: var(--primary-color);
 }
+
 .sidebar li a:hover .icon,
 .sidebar li a:hover .text {
   color: var(--sidebar-color);
 }
+
 body.dark .sidebar li a:hover .icon,
 body.dark .sidebar li a:hover .text {
   color: var(--text-color);
@@ -241,9 +255,11 @@ body.dark .sidebar li a:hover .text {
   justify-content: space-between;
   overflow-y: scroll;
 }
+
 .menu-bar::-webkit-scrollbar {
   display: none;
 }
+
 .sidebar .menu-bar .mode {
   border-radius: 6px;
   background-color: var(--primary-color-light);
@@ -259,15 +275,19 @@ body.dark .sidebar li a:hover .text {
 .mode .sun-moon i {
   position: absolute;
 }
+
 .mode .sun-moon i.sun {
   opacity: 0;
 }
+
 body.dark .mode .sun-moon i.sun {
   opacity: 1;
 }
+
 body.dark .mode .sun-moon i.moon {
   opacity: 0;
 }
+
 .bottom-content {
   margin-bottom: 33px;
 }
@@ -284,6 +304,7 @@ body.dark .mode .sun-moon i.moon {
   cursor: pointer;
 
 }
+
 .toggle-switch .switch {
   position: relative;
   height: 22px;
@@ -320,6 +341,7 @@ body.dark .switch::before {
   background-color: var(--body-color);
   transition: var(--tran-05);
 }
+
 .home .text {
   font-size: 30px;
   font-weight: 500;
@@ -327,11 +349,12 @@ body.dark .switch::before {
   padding: 12px 60px;
 }
 
-.sidebar.close ~ .home {
+.sidebar.close~.home {
   left: 78px;
   height: 100vh;
   width: calc(100% - 78px);
 }
+
 body.dark .home .text {
   color: var(--text-color);
 }

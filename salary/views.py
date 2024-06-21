@@ -69,7 +69,6 @@ def calculate_salary(request):
     context = {
         'calculated_salaries': calculated_salaries,
         'missing_employee_side_list': missing_employee_side_list,
-
     }
     # Render the template with the context
     return render(request, 'salary_list.html', context)
@@ -164,7 +163,7 @@ def delete_payment(request, payment_id):
     salary_info.save()
     # Get the URL for the monthly payment history view
     month_url = reverse('monthly_payment_history',
-                         kwargs={'employee_id': salary_info.employee_id,
-                                 'month': salary_info.salary_month.strftime('%B').lower()})
+        kwargs={'employee_id': salary_info.employee_id,
+            'month': salary_info.salary_month.strftime('%B').lower()})
     # Redirect the user to the monthly payment history view
     return redirect(month_url)
