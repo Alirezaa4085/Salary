@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import PaymentForm, SalaryFilterForm
-from .models import Employee
-from .models import SalaryInformation, PaymentHistory
+from .models import SalaryInformation, PaymentHistory, Employee
 from datetime import datetime
 from django.urls import reverse
 from django.db import transaction
+from django.http import HttpResponse
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from django.views.decorators.csrf import csrf_protect
 
 def calculate_total_salary(employee):
     return (
@@ -99,14 +102,6 @@ def add_months_excel(sourcedate, months):
         29 if year % 4 == 0 and not year % 100 == 0 or year % 400 == 0 else 28,
         31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
     return datetime(year, month, day)
-
-
-from django.http import HttpResponse
-import openpyxl
-from django.views.decorators.csrf import csrf_protect
-from openpyxl.styles import Font, PatternFill
-from openpyxl.styles import Border, Side
-from openpyxl.styles import PatternFill, Alignment, Border
 
 @csrf_protect
 def export_to_excel(request):
