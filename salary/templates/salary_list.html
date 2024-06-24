@@ -2,136 +2,155 @@
 {% load static %}
 
 {% block head %}
-	<title>Salary</title>
+<title>Salary</title>
+<script type="text/javascript">
+    var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+</script>
+<meta name="csrf-token" content="{{ csrf_token }}">
+<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
+<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/tables.css' %}">
 
-	<script type="text/javascript">
-		var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-	</script>
-	<meta name="csrf-token" content="{{ csrf_token }}">
-	<link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel=" stylesheet">
-	<link rel="stylesheet" href="{% static 'css\jquery.dataTables.min.css' %}">
-	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
-	<link rel="stylesheet" href= "{% static 'css\tables.css' %}">
+<style>
+        /* اضافه کردن برخی از استایل‌ها برای فرم */
+        .error {
+            color: red;
+            font-size: 0.875em;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            const month1 = document.getElementById('month').value;
+            const month2 = document.getElementById('month2').value;
 
-	{% endblock %}
-	
-	
+            if (month1 && month2 && month2 < month1) {
+                document.getElementById('error-message').textContent = "End month cannot be earlier than start month.";
+                return false;
+            }
+            document.getElementById('error-message').textContent = "";  // Clear any previous error message
+            return true;
+        }
+    </script>
+
+
+{% endblock %}
+
 {% block content %}
+<div class="container w-full md:w-5/6 xl:w-5/6 mx-auto px-0">
+    <h1 class="flex items-center font-sans font-bold break-normal text-indigo-500 px-2 py-8 text-xl md:text-2xl">Salary List</h1>
+    <!-- فرم فیلتر -->
+    <form method="get" action="{% url 'calculate_salary' %}" class="mb-4 flex flex-row items-center" onsubmit="return validateForm()">
+        <label for="employee_id" class="block mb-2 mr-2">Filter by Employee:</label>
+        <div class="mr-4">
+            {{ form.employee_id }}
+        </div>
+        <label for="month" class="block mb-2 mr-2">Filter by Month:</label>
+        <div class="mr-4">
+            <input type="month" id="month" name="month" value="{{ current_month }}" class="border rounded p-2">
+        </div>
+        <div class="mr-4">
+            <input type="month" id="month2" name="month2" value="{{ month2 }}" class="border rounded p-2">
+        </div>
+        <button type="submit" class="bg-blue-500 text-white rounded p-2 mr-2">Filter</button>
+        {% if month_filter or employee_filter %}
+            <a href="{% url 'calculate_salary' %}" class="text-red-500 ml-2">Clear Filter</a>
+        {% endif %}
+        <button type="submit" formaction="{% url 'export_to_excel' %}" formmethod="post" class="bg-green-500 text-white rounded p-2 ml-2">Export to Excel</button>
+        <p id="error-message" class="error"></p>
+        {% csrf_token %}
+    </form>
 
 
-<div class="container w-full md:w-5/6 xl:w-5/6  mx-auto px-0">
-	
-    <h1 class="flex items-center font-sans font-bold break-normal text-indigo-500 px-2 py-8 text-xl md:text-2xl">
-        Salary List
-    </h1>
     <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white mytable">
-		<table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em;  padding-bottom: 1em;">
-			<thead class="mytable">
-				<tr class="mytable">
-					<th>Employee Name</th>
-					<th data-order="{{ salary_info.salary_month|date:'F Y' }}">Salary Month</th>
-					<th>Monthly Income</th>
-					<th>Monthly Expenses</th>
-					<th>Current Month Balance</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody class="mytable">
-				{% for salary_info in calculated_salaries %}				
-				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" style="background-color: var(--mytable-color);color: var(--text-color);">
-					<td>{{ salary_info.employee.name }}</td>
-					<td>{{ salary_info.salary_month|date:"F Y" }}</td>
-					<td>{{ salary_info.monthly_income }}</td>
-					<td>{{ salary_info.monthly_expenses }}</td>
-					<td>{{ salary_info.current_month_balance }}</td>
-					
-            <td class="action-buttons">
-        <button class="pay-button" onclick="openEditForm({{ salary_info.id }})">Pay</button>
-        <button class="pay-button" onclick="openEditedForm({{ salary_info.employee_id }}, '{{ salary_info.salary_month|date:"F" }}')">history</button>
-        
-        
-    </td>
-        </tr>
-        {% endfor %}
-
-		{% for employee_id in missing_employee_side_list %}
-				<tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" style="background-color: var(--mytable-color);color: var(--text-color);">
-                        <!-- You might need to fetch the employee name using the employee_id -->
-    				<td>{{ employee_id.name }}</td>
-
-                    <td>N/A</td>
-                    <td>N/A</td>
-                    <td>N/A</td>
-                    <td>N/A</td>
-                    <td>
-						<a href="{% url 'edit_employee' employee_id=employee_id.id %}">َEdit</a>
+        <table id="example" class="stripe hover mytable" style="width:100%; padding-top: 0em; padding-bottom: 1em;">
+            <thead class="mytable">
+                <tr class="mytable">
+                    <th>Employee Name</th>
+                    <th>Salary Month</th>
+                    <th>Monthly Income</th>
+                    <th>Monthly Expenses</th>
+                    <th>Current Month Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody class="mytable">
+                {% for salary_info in calculated_salaries %}
+                <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" style="background-color: var(--mytable-color);color: var(--text-color);">
+                    <td>{{ salary_info.employee.name }}</td>
+                    <td>{{ salary_info.salary_month|date:"F Y" }}</td>
+                    <td>{{ salary_info.monthly_income }}</td>
+                    <td>{{ salary_info.monthly_expenses }}</td>
+                    <td>{{ salary_info.current_month_balance }}</td>
+                    <td class="action-buttons">
+                        <button class="pay-button" onclick="openEditForm({{ salary_info.id }})">Pay</button>
+                        <button class="pay-button" onclick="openEditedForm({{ salary_info.employee.id }}, '{{ salary_info.salary_month|date:"F" }}')">history</button>
                     </td>
                 </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No data available for the selected month.</td>
+                </tr>
                 {% endfor %}
-    </tbody>
-</table>
-</div>
+                {% for employee in missing_employee_side_list %}
+                <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}" style="background-color: var(--mytable-color); color: red;">
+					<td>{{ employee.name }}</td>
+					<td>N/A</td>
+					<td>N/A</td>
+					<td>N/A</td>
+					<td>N/A</td>
+					<td>
+						<a href="{% url 'edit_employee' employee_id=employee.id %}">Edit</a>
+					</td>
+				</tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
-   if (typeof jQuery == 'undefined') {
-       console.log('jQuery is not loaded');
-   } else {
-       console.log('jQuery is loaded');
-   }
+    if (typeof jQuery == 'undefined') {
+        console.log('jQuery is not loaded');
+    } else {
+        console.log('jQuery is loaded');
+    }
 </script>
 
-<!--Datatables -->
-{% comment %} <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> {% endcomment %}
 <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
 <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
-        
 
+<script>
+    $(document).ready(function() {
+        var table = $('#example').DataTable({
+            responsive: true
+        }).columns.adjust().responsive.recalc();
+    });
 
-	<script>
-		$(document).ready(function() {
+    function openEditForm(SalaryInformation_id) {
+        window.location.href = 'pay/' + SalaryInformation_id + '/';
+    }
 
-			var table = $('#example').DataTable({
-					responsive: true
-				})
-				.columns.adjust().responsive.recalc();
-		});
-	</script>
-  <script>
-        function openEditForm(SalaryInformation_id) {
-            window.location.href = 'pay/' + SalaryInformation_id + '/';
-			
-        }
+    function openEditedForm(SalaryInformation_id, monthName) {
+        var monthSlug = monthName.toLowerCase();
+        window.location.href = 'history/' + SalaryInformation_id + '/' + monthSlug + '/';
+    }
 
-		function openEditedForm(SalaryInformation_id, monthName) {
-			var monthSlug = monthName.toLowerCase(); // تبدیل نام ماه به حالت کوچک
-			window.location.href = 'history/' + SalaryInformation_id + '/' + monthSlug + '/';
-		}
-    </script> 
-
-	<<!-- TODO do a salari benfit for this-->
-	<script>
-		function payEmployee(SalaryInformation_id) {
-			$.ajax({
-				type: 'POST',
-				url: '/pay/' + SalaryInformation_id + '/',  // آدرس ویوی پرداخت
-				data: {
-					'csrfmiddlewaretoken': csrftoken,
-				},
-				success: function (response) {
-					// اینجا می‌توانید هر عملیات مرتبط با موفقیت پرداخت را انجام دهید
-					alert('Payment successful!');
-					// یا هر اقدام دیگر...
-				},
-				error: function (error) {
-					// اینجا می‌توانید هر عملیات مرتبط با خطا را انجام دهید
-					alert('Payment failed!');
-					// یا هر اقدام دیگر...
-				}
-			});
-		}
-	</script>
-	
-
+    function payEmployee(SalaryInformation_id) {
+        $.ajax({
+            type: 'POST',
+            url: '/pay/' + SalaryInformation_id + '/',
+            data: {
+                'csrfmiddlewaretoken': csrftoken,
+            },
+            success: function(response) {
+                alert('Payment successful!');
+            },
+            error: function(error) {
+                alert('Payment failed!');
+            }
+        });
+    }
+</script>
 {% endblock %}

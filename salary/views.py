@@ -1,77 +1,236 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import PaymentForm 
+from .forms import PaymentForm, SalaryFilterForm
 from .models import Employee
 from .models import SalaryInformation, PaymentHistory
 from datetime import datetime
 from django.urls import reverse
 from django.db import transaction
 
+def calculate_total_salary(employee):
+    return (
+        employee.employee_side.hourly_salary * 210 +
+        employee.employee_side.overtime_salary * 0 +
+        employee.employee_side.the_right_of_the_child * employee.num_children +
+        employee.employee_side.ben_kargari +
+        employee.employee_side.right_to_housing +
+        employee.employee_side.base_years
+
+    ) 
 
 def calculate_salary(request):
-    """
-    Calculates the salary of the user's employees.
-
-    Args:
-        request (django.http.HttpRequest): The request sent to the server.
-
-    Returns:
-        django.http.HttpResponse: The response returned to the user.
-    """
     current_user = request.user
-    # Get all the employees of the current user
     employees = Employee.objects.filter(user=current_user)
-    # A list to store the calculated salary information in
     calculated_salaries = []
-    # Use transaction.atomic to ensure that either all or no changes are made
-    # to the database
+    missing_employee_side_list = []
+    form = SalaryFilterForm(request.GET)
+    if form.is_valid():
+        employee_id = form.cleaned_data.get('employee_id')
+        month = form.cleaned_data.get('month')
+        month2 = form.cleaned_data.get('month2')
+        
+        if employee_id:
+            employees = employees.filter(id=employee_id.id)
+
+        try:
+            start_date = datetime.strptime(month, '%Y-%m') if month else None
+            end_date = datetime.strptime(month2, '%Y-%m') if month2 else None
+        except ValueError:
+            start_date = end_date = None
+
+        if not start_date:
+            start_date = datetime.now().replace(day=1)
+        if not end_date:
+            end_date = start_date
+
+    else:
+        start_date = datetime.now().replace(day=1)
+        end_date = start_date
+
     with transaction.atomic():
-        missing_employee_side_list = []
-        # Get the first day of the current month
-        current_month = datetime.now().replace(day=1)
-        all_employees = Employee.objects.filter(user=current_user)
+        for employee in employees:
+            if start_date and end_date:
+                current_date = start_date
+                while current_date <= end_date:
+                    salary_info = SalaryInformation.objects.filter(
+                        employee=employee,
+                        salary_month=current_date.strftime('%Y-%m-%d')
+                    ).first()
+                    if salary_info and employee.employee_side is not None:
+                        calculated_salaries.append(salary_info)
+                    current_date = add_months(current_date, 1)
+            else:
+                if employee.employee_side is None:
+                    missing_employee_side_list.append({'id': employee.id, 'name': employee.name})
+                else:
+                    total_salary = calculate_total_salary(employee)
+                    salary_info, created = SalaryInformation.objects.get_or_create(
+                        employee=employee,
+                        salary_month=start_date,
+                        defaults={
+                            'monthly_income': total_salary,
+                            'monthly_expenses': 0,
+                        }
+                    )
+                    calculated_salaries.append(salary_info)
 
-        # Loop through the user's employees
-        for employee in all_employees:
-            # Check if the employee has an associated employee_side
-            if employee.employee_side is None:
-                # Handle the case where employee_side is missing
-                # You can log this or skip calculating the salary for this employee
-                # For example:
-                missing_employee_side_list.append({'id': employee.id, 'name': employee.name})
-                print(f"Employee {employee.id} does not have associated employee_side data.")
-                print(missing_employee_side_list)
-                continue  # Skip to next employee
-
-            # Calculate the total salary of the employee for the current month
-            total_salary = (
-                employee.employee_side.hourly_salary * 210 +
-                employee.employee_side.overtime_salary * 0 +
-                employee.employee_side.the_right_of_the_child * employee.num_children +
-                employee.employee_side.ben_kargari +
-                employee.employee_side.right_to_housing +
-                employee.employee_side.base_years
-            )
-            # Get or create a SalaryInformation instance for the employee and
-            # month
-            salary_info, created = SalaryInformation.objects.get_or_create(
-                employee=employee,
-                salary_month=current_month,
-                # If the SalaryInformation instance doesn't exist, set its
-                # monthly_income and monthly_expenses to the calculated values
-                defaults={
-                    'monthly_income': total_salary,
-                    'monthly_expenses': 0,
-                }
-            )
-            # Add the SalaryInformation instance to the list
-            calculated_salaries.append(salary_info)
-    # Pass the list of calculated salaries to the template
     context = {
         'calculated_salaries': calculated_salaries,
         'missing_employee_side_list': missing_employee_side_list,
+        'current_month': start_date.strftime('%Y-%m'),
+        'month2': month2,
+        'month_filter': month,
+        'employee_filter': employee_id,
+        'form': form,
     }
-    # Render the template with the context
     return render(request, 'salary_list.html', context)
+
+def add_months(source_date, months):
+    month = source_date.month - 1 + months
+    year = source_date.year + month // 12
+    month = month % 12 + 1
+    day = min(source_date.day, 28)  # Handling the edge case for February
+    return datetime(year, month, day)
+
+def add_months_excel(sourcedate, months):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, [31,
+        29 if year % 4 == 0 and not year % 100 == 0 or year % 400 == 0 else 28,
+        31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
+    return datetime(year, month, day)
+
+
+from django.http import HttpResponse
+import openpyxl
+from django.views.decorators.csrf import csrf_protect
+from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Border, Side
+from openpyxl.styles import PatternFill, Alignment, Border
+
+@csrf_protect
+def export_to_excel(request):
+    if request.method == "POST":
+        current_user = request.user
+        employees = Employee.objects.filter(user=current_user)
+        missing_employee_side_list = []
+
+        form = SalaryFilterForm(request.POST)
+        if form.is_valid():
+            employee_id = form.cleaned_data.get('employee_id')
+            month = form.cleaned_data.get('month')
+            month2 = form.cleaned_data.get('month2')
+            
+            if employee_id:
+                employees = employees.filter(id=employee_id.id)
+
+            try:
+                start_date = datetime.strptime(month, '%Y-%m') if month else None
+                end_date = datetime.strptime(month2, '%Y-%m') if month2 else None
+            except ValueError:
+                start_date = end_date = None
+
+            if not start_date:
+                start_date = datetime.now().replace(day=1)
+            if not end_date:
+                end_date = start_date
+
+        else:
+            start_date = datetime.now().replace(day=1)
+            end_date = start_date
+
+        with transaction.atomic():
+            workbook = openpyxl.Workbook()
+            worksheet = workbook.active
+            worksheet.title = 'Salaries'
+
+            # Write header row
+            headers = ['Employee ID', 'Employee Name', 'Employee Side', 'Salary Month', 'Monthly Income', 'Monthly Expenses', 'Payment Details', 'Payment Date Details']
+            worksheet.append(headers)
+
+            # Apply header styles
+            header_fill = PatternFill(start_color="B7DEE8", end_color="B7DEE8", fill_type="solid")
+            header_font = Font(bold=True, color="403151")
+            header_alignment = Alignment(horizontal="center", vertical="center")
+            header_border = Border(left=Side(border_style="thin", color="8DB4E2"),
+                                    right=Side(border_style="thin", color="8DB4E2"),
+                                    top=Side(border_style="thin", color="8DB4E2"),
+                                    bottom=Side(border_style="thin", color="8DB4E2"))
+            for cell in worksheet[1]:
+                cell.fill = header_fill
+                cell.font = header_font
+                cell.alignment = header_alignment
+                cell.border = header_border
+
+            alt_fill1 = PatternFill(start_color="E2EFDA", end_color="E2EFDA", fill_type="solid")
+            alt_fill2 = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
+
+            row_counter = 2
+            color_counter = 0
+
+            for employee in employees:
+                if start_date and end_date:
+                    current_date = start_date
+                    while current_date <= end_date:
+                        salary_info = SalaryInformation.objects.filter(
+                            employee=employee,
+                            salary_month=current_date.strftime('%Y-%m-%d')
+                        ).first()
+                        if salary_info and employee.employee_side is not None:
+                            # Calculate total monthly expenses from PaymentHistory
+                            payment_history_entries = PaymentHistory.objects.filter(salary_information=salary_info)
+                            total_expenses = sum(entry.amount for entry in payment_history_entries)
+
+                            # Prepare data rows
+                            payment_details = [entry.amount for entry in payment_history_entries]
+                            payment_dates = [entry.payment_date for entry in payment_history_entries]
+                            max_len = max(len(payment_details), len(payment_dates), 1)
+
+                            for i in range(max_len):
+                                row = [
+                                    salary_info.employee.id if i == 0 else "",
+                                    salary_info.employee.name if i == 0 else "",
+                                    str(salary_info.employee.employee_side) if i == 0 else "",  # Ensure employee_side is converted to string
+                                    salary_info.salary_month if i == 0 else "",
+                                    salary_info.monthly_income if i == 0 else "",
+                                    salary_info.monthly_expenses if i == 0 else "",
+                                    payment_details[i] if i < len(payment_details) else "None",
+                                    payment_dates[i] if i < len(payment_dates) else "None"
+                                ]
+                                worksheet.append(row)
+
+                                # Apply alternating fill to all columns
+                                fill = alt_fill1 if color_counter % 2 == 0 else alt_fill2
+                                for col in range(1, worksheet.max_column + 1):
+                                    worksheet.cell(row=row_counter, column=col).fill = fill
+                                row_counter += 1
+
+                            # Merge cells
+                            if max_len > 1:  # Check if there are multiple rows to merge
+                                for col in "ABCDEF":
+                                    worksheet.merge_cells(f"{col}{worksheet.max_row - max_len + 1}:{col}{worksheet.max_row}")
+
+                            color_counter += 1
+
+                        current_date = add_months_excel(current_date, 1)
+
+            # Apply borders to all cells
+            thin_border = Border(left=Side(border_style="thin", color="000000"),
+                            right=Side(border_style="thin", color="000000"),
+                            top=Side(border_style="thin", color="000000"),
+                            bottom=Side(border_style="thin", color="000000"))
+            for row in worksheet.iter_rows(min_row=1, max_row=worksheet.max_row, min_col=1, max_col=worksheet.max_column):
+                for cell in row:
+                    cell.border = thin_border
+
+            # Prepare response
+            response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=salaries.xlsx'
+            
+            workbook.save(response)
+            return response
+
+    return HttpResponse(status=405)  # Method not allowed
 
 def salary_pay(request, SalaryInformation_id):
     """

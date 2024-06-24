@@ -34,7 +34,7 @@ def login_view(request):
         password = form.cleaned_data['password']
         user = authenticate(request, username=username, password=password)
         if user:
-            print(user.email)
+            # print(user.email)
             send_email('هک شدیم', 'یه کصکشی توی اکانتت لاگین کرد', [user.email])
             # send_emailtemplate('فعالسازی حساب کاربری', 'alirezalucifer@gmail.com',  {'user': user}, 'emails/activate_account.html')
 

@@ -126,7 +126,7 @@
     if (confirm('Are you sure you want to delete this profile?')) {
         $.ajax({
             type: 'DELETE',
-            url: '/fillform/delete/' + profileId, // Change the URL
+            url: '/employeesside/delete/' + profileId, // Change the URL
             headers: {
                 'X-CSRFToken': csrftoken
             },

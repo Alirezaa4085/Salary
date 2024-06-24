@@ -23,6 +23,7 @@ class Employee(models.Model):
             self.num_children = 0
         super().save(*args, **kwargs)
 
+    
 
 @receiver(pre_save, sender=Employee)
 def update_num_children(sender, instance, **kwargs):
