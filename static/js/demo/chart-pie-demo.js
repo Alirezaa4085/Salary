@@ -6,9 +6,15 @@ Chart.defaults.global.defaultFontColor = '#858796';
 const total_expensess = document.getElementById('13').textContent;
 const total_expensesss = parseInt(total_expensess.replace(/,/g, ""));
 console.log(total_expensesss);
-const total_income = document.getElementById('14');
-const total_incomes = parseInt(May.textContent.replace(/,/g, ""));
+
+const total_income = document.getElementById('14').textContent;
+const total_incomes = parseInt(total_income.replace(/,/g, ""));
 console.log(total_incomes);
+
+
+// const total_income = document.getElementById('14');
+// const total_incomes = parseInt(May.textContent.replace(/,/g, ""));
+// console.log(total_incomes);
 
 
 
@@ -18,8 +24,9 @@ var ctx = document.getElementById("myPieChart");
 var myPieChart = new Chart(ctx, {
   type: 'doughnut',
   data: {
-    labels: ["left over", "total May oustanding"],
+    labels: ["left over", "total oustanding"],
     datasets: [{
+      // data: [total_expensesss - total_incomes, total_incomes],
       data: [total_expensesss - total_incomes, total_incomes],
       backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
       hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],

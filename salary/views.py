@@ -167,10 +167,15 @@ def export_to_excel(request):
                 if start_date and end_date:
                     current_date = start_date
                     while current_date <= end_date:
+                        # salary_info = SalaryInformation.objects.filter(
+                        #     employee=employee,
+                        #     salary_month=current_date.strftime('%Y-%m-%d')
+                        # ).first()
                         salary_info = SalaryInformation.objects.filter(
                             employee=employee,
-                            salary_month=current_date.strftime('%Y-%m-%d')
-                        ).first()
+                            salary_month__range=[start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
+                        ).order_by('salary_month')
+
                         if salary_info and employee.employee_side is not None:
                             # Calculate total monthly expenses from PaymentHistory
                             payment_history_entries = PaymentHistory.objects.filter(salary_information=salary_info)
