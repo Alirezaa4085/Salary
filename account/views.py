@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomRegistrationForm
 from account.models import UserProfile
 from django.contrib.auth.models import User
-
 from utils.email_service import * 
-from django.core.mail import send_mail
 
 def register_view(request):
 
@@ -15,14 +13,10 @@ def register_view(request):
         username = form.cleaned_data['username']
         email = form.cleaned_data['email']
         password = form.cleaned_data['password1']
-        
         user = User.objects.create_user(username=username, email=email, password=password)
-        
         UserProfile.objects.create(user=user)
         login(request, user)
-        send_email('فعالسازی حساب کاربری', 'یک اکانت جدید با ایمیل شما در سایت ما ساخته شد', [user.email])
-        send_emailtemplate('فعالسازی حساب کاربری', user.email, {'user': user}, 'emails/activate_account.html')
-
+        send_template_email(user,'emails/signup.html')
         return redirect('dashboard')
     return render(request, 'register.html', {'form': form})
 
@@ -34,11 +28,14 @@ def login_view(request):
         password = form.cleaned_data['password']
         user = authenticate(request, username=username, password=password)
         if user:
-            # print(user.email)
-            send_email('هک شدیم', 'یه کصکشی توی اکانتت لاگین کرد', [user.email])
-            # send_emailtemplate('فعالسازی حساب کاربری', 'alirezalucifer@gmail.com',  {'user': user}, 'emails/activate_account.html')
-
             login(request, user)
+            user_agent = request.META.get('HTTP_USER_AGENT', 'unknown')
+            ip_address = request.META.get('REMOTE_ADDR', 'unknown') 
+            context = {
+                'user_agent': user_agent,
+                'ip_address': ip_address,
+            }
+            send_template_email(user, user_agent, ip_address, 'emails/login.html')
             return redirect('dashboard')
     else:
         if request.method == 'POST':
@@ -46,7 +43,13 @@ def login_view(request):
             if username:
                 try:
                     user = User.objects.get(username=username)
-                    send_email('کیرمم نمیتونن بخورن', 'کصکشا سعی کردن بیان تو اکانتت که کیر خوردن', [user.email])
+                    user_agent = request.META.get('HTTP_USER_AGENT', 'unknown')
+                    ip_address = request.META.get('REMOTE_ADDR', 'unknown') 
+                    context = {
+                        'user_agent': user_agent,
+                        'ip_address': ip_address,
+                        }                    
+                    send_template_email(user, user_agent, ip_address, 'emails/Failed_Login_Attempt.html')
                 except User.DoesNotExist:
                     pass
     return render(request, 'login.html', {'form': form})

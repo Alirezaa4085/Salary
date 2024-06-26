@@ -17,10 +17,20 @@ def calculate_total_salary(employee):
         employee.employee_side.ben_kargari +
         employee.employee_side.right_to_housing +
         employee.employee_side.base_years
-
     ) 
 
+def add_months(sourcedate, months):
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, [31,
+        29 if year % 4 == 0 and not year % 100 == 0 or year % 400 == 0 else 28,
+        31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
+    return datetime(year, month, day)
+
+
 def calculate_salary(request):
+    current_date_test = datetime.now().replace(day=1)
     current_user = request.user
     employees = Employee.objects.filter(user=current_user)
     calculated_salaries = []
@@ -51,7 +61,7 @@ def calculate_salary(request):
 
     with transaction.atomic():
         for employee in employees:
-            if start_date and end_date:
+            if start_date != end_date:
                 current_date = start_date
                 while current_date <= end_date:
                     salary_info = SalaryInformation.objects.filter(
@@ -61,7 +71,7 @@ def calculate_salary(request):
                     if salary_info and employee.employee_side is not None:
                         calculated_salaries.append(salary_info)
                     current_date = add_months(current_date, 1)
-            else:
+            elif start_date.year == current_date_test.year and start_date.month == current_date_test.month and end_date == start_date:
                 if employee.employee_side is None:
                     missing_employee_side_list.append({'id': employee.id, 'name': employee.name})
                 else:
@@ -87,21 +97,7 @@ def calculate_salary(request):
     }
     return render(request, 'salary_list.html', context)
 
-def add_months(source_date, months):
-    month = source_date.month - 1 + months
-    year = source_date.year + month // 12
-    month = month % 12 + 1
-    day = min(source_date.day, 28)  # Handling the edge case for February
-    return datetime(year, month, day)
 
-def add_months_excel(sourcedate, months):
-    month = sourcedate.month - 1 + months
-    year = sourcedate.year + month // 12
-    month = month % 12 + 1
-    day = min(sourcedate.day, [31,
-        29 if year % 4 == 0 and not year % 100 == 0 or year % 400 == 0 else 28,
-        31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1])
-    return datetime(year, month, day)
 
 @csrf_protect
 def export_to_excel(request):
@@ -167,14 +163,14 @@ def export_to_excel(request):
                 if start_date and end_date:
                     current_date = start_date
                     while current_date <= end_date:
-                        # salary_info = SalaryInformation.objects.filter(
-                        #     employee=employee,
-                        #     salary_month=current_date.strftime('%Y-%m-%d')
-                        # ).first()
                         salary_info = SalaryInformation.objects.filter(
                             employee=employee,
-                            salary_month__range=[start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
-                        ).order_by('salary_month')
+                            salary_month=current_date.strftime('%Y-%m-%d')
+                        ).first()
+                        # salary_info = SalaryInformation.objects.filter(
+                        #     employee=employee,
+                        #     salary_month__range=[start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
+                        # ).order_by('salary_month')
 
                         if salary_info and employee.employee_side is not None:
                             # Calculate total monthly expenses from PaymentHistory
@@ -212,7 +208,7 @@ def export_to_excel(request):
 
                             color_counter += 1
 
-                        current_date = add_months_excel(current_date, 1)
+                        current_date = add_months(current_date, 1)
 
             # Apply borders to all cells
             thin_border = Border(left=Side(border_style="thin", color="000000"),
